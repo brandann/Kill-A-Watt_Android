@@ -123,19 +123,16 @@ namespace Global{
             if (magnetized)
                 return;
 
-            if (Network.isServer && myOwner == ownerShip.Player1)
+            if (myOwner == ownerShip.Player1)
             {
                 ToggleSelect();
                 updateSprite();
             }
-            else if (Network.isClient && myOwner == ownerShip.Player2)
-            {
-                GetComponent<NetworkView>().RPC("ToggleSelect", RPCMode.Server);                
-            }
+
         }
         //-------------------------------------------------------------------------------------------------------------------------------------------------
 
-        [RPC]
+       
         public void ToggleSelect(){
             if (magnetized) return;
             selected = (selected == true) ? false : true;           
@@ -223,15 +220,14 @@ namespace Global{
                     myRender.sprite = neutralSprite;
                     break;
                 case ownerShip.Player1:
-                    if (selected && Network.isServer)
-                        myRender.sprite = player1SelectdSprite;
-                    else
+                        if(selected)
+                        {
+                            myRender.sprite = player1SelectdSprite;
+                            break;
+                        }
                         myRender.sprite = player1Sprite;
                     break;
                 case ownerShip.Player2:
-                    if (selected && Network.isClient)
-                        myRender.sprite = player2SelectdSprite;
-                    else
                         myRender.sprite = player2Sprite;
                     break;
                 default:
@@ -244,14 +240,13 @@ namespace Global{
 		
         void OnMouseOver()
         {
+
             //Only looking for Right clicks
             //Maybe a point of optomization later on; currently this function is called every time the mouse passes over a tower
-            if (Input.GetMouseButtonDown(1))
+            if (Input.GetMouseButtonDown(0) && (myOwner == ownerShip.Player2 || myOwner == ownerShip.Neutral))
             {
-                if(Network.isServer)                                                              //Server initiates an attack
+                                                           //Server initiates an attack
                     Manager.AttackToward(transform.position, ownerShip.Player1);  
-                else if(Network.isClient )                                                       //Client asks the server to initiate an attack
-                    GetComponent<NetworkView>().RPC("SpawnAttackForMe",RPCMode.Server, transform.position);
              } 
         }
         //--------------------------------------------------------------------------------------------------------------------------------------------------
@@ -296,7 +291,7 @@ namespace Global{
             while (unitsToSend > 0 && units > unitsToSend && myOwner == myOwnerWhenStarted)
             {
                 //Create a unit and decrement
-                GameObject go = (GameObject)Network.Instantiate(prefabToSpawn, spawnPoint, Quaternion.LookRotation(Vector3.forward, vecToTarget), 0);
+                GameObject go = (GameObject)GameObject.Instantiate(prefabToSpawn, spawnPoint, Quaternion.LookRotation(Vector3.forward, vecToTarget));
                 unitBehavior spawnedUnit = go.GetComponent<unitBehavior>(); //set the owner of the new unit
                 spawnedUnit.destination = targetPos;
                 spawnedUnit.myOwner = myOwner;
@@ -322,9 +317,11 @@ namespace Global{
       
         void OnTriggerEnter2D(Collider2D other) 
         {
-            //This function should only be running on the client as it changes game state
-            if (Network.isClient)
+
+            if (null == other || other.gameObject.tag.Contains("Untagged"))
+            {
                 return;
+            }
             //Flip owner if hit by magnet ability
             if (other.gameObject.tag.Contains("Magnet"))
                 return;
@@ -354,9 +351,9 @@ namespace Global{
                     SwitchOwner(otherOwner);
             }
 
-            if(other.gameObject.tag.Contains("Unit") && Network.isServer){
+            if(other.gameObject.tag.Contains("Unit")){
                 other.gameObject.GetComponent<unitBehavior>().makeBurst();
-                Network.Destroy(other.gameObject);
+                GameObject.Destroy(other.gameObject);
             }
         }
         

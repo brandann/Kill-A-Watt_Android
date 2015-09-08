@@ -48,7 +48,7 @@ namespace Global{
                     foreach (Collider2D c in colliders) {
                         Tower t = c.GetComponent<Tower>();
                         if (t != null) {
-                            if (Network.isServer && t.myOwner == ownerShip.Player1 && t.selected == false) {
+                            if (t.myOwner == ownerShip.Player1 && t.selected == false) {
                                 t.ToggleSelect();
                                 t.updateSprite();
                             }

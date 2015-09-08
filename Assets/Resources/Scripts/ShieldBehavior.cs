@@ -14,21 +14,38 @@ namespace Global{
 		
         void Start () {
             if (this.name == "ShieldPlayer1(Clone)") {
-                myDeathRay = GameObject.Find ("DeathRayPlayer1(Clone)");
-                secondShield = this.transform.FindChild ("ShieldYellowTwo");
+                waitfordeathray("ShieldPlayer1(Clone)", "ShieldYellowTwo");
             } else {
-                myDeathRay = GameObject.Find ("DeathRayPlayer2(Clone)");
-                secondShield = this.transform.FindChild ("ShieldBlueTwo");
+                waitfordeathray("DeathRayPlayer2(Clone)", "ShieldBlueTwo");
             }
+            
+        }
+
+        private bool waiting = true;
+
+        IEnumerator waitfordeathray(string str, string shield)
+        {
+            while(myDeathRay == null)
+            {
+                myDeathRay = GameObject.Find ("DeathRayPlayer1(Clone)");
+                yield return null;
+            }
+
+            secondShield = this.transform.FindChild ("ShieldYellowTwo");
             line = this.GetComponent<LineRenderer> ();
             setShield ();
             secondShield.GetComponent<SpriteRenderer> ().enabled = false;
             AudioManager audioManager = GameObject.Find ("Main Camera").GetComponent<AudioManager> ();
             audioManager.playShield();
+            waiting = false;
         }
 		
         // Update is called once per frame
         void Update () {
+            if(waiting)
+            {
+                return;
+            }
             secondShield.GetComponent<SpriteRenderer> ().enabled = false;
             if (Time.realtimeSinceStartup > startTime + lifeTime) {
                 if(Network.isServer)
@@ -68,6 +85,7 @@ namespace Global{
             startTime = Time.realtimeSinceStartup;
             deathRay = myDeathRay.GetComponent<DeathRay> ();
             Vector3 spriteCenter =  deathRay.rayGunSprite.GetComponent<SpriteRenderer>().bounds.center;
+            //Vector3 spriteCenter = new Vector3(0,0,0); // hack to make game work
             line.SetPosition (0, spriteCenter);
             line.SetPosition(1, new Vector3(transform.position.x, transform.position.y, -1));
             line.SetColors (Color.grey, Color.grey);

@@ -112,12 +112,7 @@ namespace Global {
         #region Shield
         public void playShield() {
             Debug.Log ("playShield");
-            GetComponent<NetworkView>().RPC("RPCplayShield", RPCMode.AllBuffered);
-        }
-        
-        [RPC] private void RPCplayShield() {
-            Debug.Log ("RPCplayShield");
-            GetComponent<AudioSource>().PlayOneShot (clipShield);
+            GetComponent<AudioSource>().PlayOneShot(clipShield);
         }
         #endregion
 
@@ -176,24 +171,14 @@ namespace Global {
         // play a sound via the network when the tower becomes player1 controlled
         public void playTowerTakeover1(){
             Debug.Log ("playTowerTakeover1");
-            GetComponent<NetworkView>().RPC("RPCplayTowerTakeover1", RPCMode.AllBuffered);
+            GetComponent<AudioSource>().PlayOneShot(clipTower1TakeOver);
         }
-        
-        [RPC] public void RPCplayTowerTakeover1() {
-            Debug.Log ("RPCplayTowerTakeover1");
-            GetComponent<AudioSource>().PlayOneShot (clipTower1TakeOver);
-        }
-        
+      
         //-----------------------------------------------------------------------------
         // play a sound via the network when the tower becomes player2 controlled
         public void playTowerTakeover2(){
             Debug.Log ("playTowerTakeover2");
-            GetComponent<NetworkView>().RPC("RPCplayTowerTakeover2", RPCMode.AllBuffered);
-        }
-        
-        [RPC] public void RPCplayTowerTakeover2() {
-            Debug.Log ("RPCplayTowerTakeover2");
-            GetComponent<AudioSource>().PlayOneShot (clipTower2TakeOver);
+            GetComponent<AudioSource>().PlayOneShot(clipTower2TakeOver);
         }
         #endregion
         #endregion

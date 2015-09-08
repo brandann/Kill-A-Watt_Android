@@ -40,7 +40,7 @@ namespace Global
         {
             if (tag != other.gameObject.tag && other.gameObject.tag.Contains ("Unit")) {
                 audioManager.playMinionCollision ();
-                GameObject e = Network.Instantiate (burstManagerPrefab, this.transform.position, Quaternion.LookRotation (Vector3.forward, Vector3.forward), 0) as GameObject;
+                GameObject e = GameObject.Instantiate (burstManagerPrefab, this.transform.position, Quaternion.LookRotation (Vector3.forward, Vector3.forward)) as GameObject;
                 BurstManager BM = e.GetComponent<BurstManager> ();
                 if (BM != null) {
                     if(rogue){
@@ -52,26 +52,24 @@ namespace Global
                        other.gameObject.tag.Contains ("Bomb") && 
                        other.gameObject.GetComponent<BombParticleBehavior>().myOwner != myOwner) {
                 Debug.Log("Unit belongs to: " + myOwner  + " killed by " + other.gameObject.GetComponent<BombParticleBehavior>().myOwner);
-                if (Network.isServer) {
+
                   makeBurst();
                   makeBomb(other.gameObject.GetComponent<BombParticleBehavior>().myOwner);
-                  Network.Destroy (other.gameObject);
-                  Network.Destroy(this.gameObject);
+                  GameObject.Destroy(other.gameObject);
+                  GameObject.Destroy(this.gameObject);
                   return;
-                }
+                
             }
-            if (Network.isServer)
-            {
-                if (tag != other.gameObject.tag && other.gameObject.tag.Contains("Unit")) {
-                  //audioManager.playMinionCollision();
-                  Network.Destroy(other.gameObject);
-                }
-            }           
+
+            if (tag != other.gameObject.tag && other.gameObject.tag.Contains("Unit")) {
+                //audioManager.playMinionCollision();
+                GameObject.Destroy(other.gameObject);
+            }       
         }
 
         private void makeBomb(ownerShip owner) {
             //recursion
-            GameObject e = Network.Instantiate(bombManagerPrefab, this.transform.position, Quaternion.LookRotation(Vector3.forward, Vector3.forward), 0) as GameObject;
+            GameObject e = GameObject.Instantiate(bombManagerPrefab, this.transform.position, Quaternion.LookRotation(Vector3.forward, Vector3.forward)) as GameObject;
             BombManager BM = e.GetComponent<BombManager>();
             if(BM != null) {
                 BM.changeOwner(owner);
@@ -92,7 +90,7 @@ namespace Global
         }
 		
         public void makeBurst() {
-            GameObject e = Network.Instantiate(burstManagerPrefab, this.transform.position, Quaternion.LookRotation(Vector3.forward, Vector3.forward), 0) as GameObject;
+            GameObject e = GameObject.Instantiate(burstManagerPrefab, this.transform.position, Quaternion.LookRotation(Vector3.forward, Vector3.forward)) as GameObject;
             BurstManager BM = e.GetComponent<BurstManager>();
             if (BM != null) {
                 if (rogue) {

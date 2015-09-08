@@ -282,6 +282,7 @@ namespace Global{
 
             Rect UnderRightRect = new Rect (StartRight, (float)(ScreenH * .015), currentRight, (float)(ScreenH * .05));
             // change the style if the energy bar is filled
+            /*
             if(gameManager.player2Score < totalScore)
                 GUI.Box (UnderRightRect, "",RightEnergyBar);
             else if(gameManager.player2Score == totalScore)
@@ -295,6 +296,7 @@ namespace Global{
             Rect EnergyBarRightRect = new Rect ((float)(ScreenW * .63),
                                                 (float)(ScreenH * .015), (float)(ScreenW * .35), (float)(ScreenH * .05));
             GUI.Box (EnergyBarRightRect, "", EnergyBarBorder);
+             * */
         }
 
         //-----------------------------------------------------------------------------

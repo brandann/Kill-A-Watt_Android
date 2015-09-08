@@ -17,17 +17,17 @@ namespace Global {
         public Dictionary<Vector3, Tower> towerLookup = new Dictionary<Vector3, Tower>();
         
         //Default unit count for each of the 3 factions        
-        public int NeutralStartingUnits;
-        public int Player1StartingUnits;
-        public int Player2StartingUnits;
+        private int NeutralStartingUnits = 5;
+        private int Player1StartingUnits = 10;
+        private int Player2StartingUnits = 10;
         
-        private GameObject towerPrefab;
-        private GameObject shockPrefab;
-        private GameObject root1Prefab;
-        private GameObject root2Prefab;
-        private GameObject plusTenPrefab;
-        private GameObject shieldP1;
-        private GameObject shieldP2;
+        public GameObject towerPrefab;
+        public GameObject shockPrefab;
+        public GameObject root1Prefab;
+        public GameObject root2Prefab;
+        public GameObject plusTenPrefab;
+        public GameObject shieldP1;
+        public GameObject shieldP2;
         #endregion
 
         //Each Player's score
@@ -43,12 +43,6 @@ namespace Global {
         public bool ClearSelectionAfterAttack = true;
         
         void Start() {			
-            towerPrefab = Resources.Load("Prefabs/tower") as GameObject;
-            shockPrefab = Resources.Load("Prefabs/ShockTower") as GameObject;
-            root1Prefab = Resources.Load ("Prefabs/DeathRayPlayer1") as GameObject;
-            root2Prefab = Resources.Load ("Prefabs/DeathRayPlayer2") as GameObject;
-            shieldP1 = Resources.Load ("Prefabs/ShieldPlayer1") as GameObject;
-            shieldP2 = Resources.Load ("Prefabs/ShieldPlayer2") as GameObject;
 
             GameObject manager = GameObject.FindGameObjectsWithTag("MainCamera")[0];
             stateManager = manager.GetComponent<StateManager>();
@@ -252,16 +246,6 @@ namespace Global {
 
         //Instanciates the towers in all the locations specified by BuildTowerLocations()
         public void SpawnTowers() {
-
-            Debug.Log("Spawn Towers");
-            /*
-            GameObject one = (GameObject)Network.Instantiate (shieldP1, new Vector3(182,0,0), Quaternion.Euler (0, 0, 0), 0);
-            GameObject two = (GameObject)Network.Instantiate (shieldP1, new Vector3(174,11,0), Quaternion.Euler (0, 0, 0), 0);
-            GameObject three = (GameObject)Network.Instantiate (shieldP1, new Vector3(174,-11,0), Quaternion.Euler (0, 0, 0), 0);
-            GameObject four = (GameObject)Network.Instantiate (shieldP2, new Vector3(218,0,0), Quaternion.Euler (0, 0, 0), 0);
-            GameObject five = (GameObject)Network.Instantiate (shieldP2, new Vector3(226,11,0), Quaternion.Euler (0, 0, 0), 0);
-            GameObject six = (GameObject)Network.Instantiate (shieldP2, new Vector3(226,-11,0), Quaternion.Euler (0, 0, 0), 0);
-            */
             GameObject one = (GameObject)GameObject.Instantiate(shieldP1, new Vector3(182, 0, 0), Quaternion.Euler(0, 0, 0));
             GameObject two = (GameObject)GameObject.Instantiate(shieldP1, new Vector3(174, 11, 0), Quaternion.Euler(0, 0, 0));
             GameObject three = (GameObject)GameObject.Instantiate(shieldP1, new Vector3(174, -11, 0), Quaternion.Euler(0, 0, 0));
