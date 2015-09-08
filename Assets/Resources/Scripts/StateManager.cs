@@ -32,7 +32,7 @@ namespace Global{
 
         // this controls camera pos and passes the state to the GUI manager
         void Start () {
-            status = WorldGameState.StartMenu;
+            status = WorldGameState.InGame;
             MainCamera = Camera.main;
             color1 = MainCamera.backgroundColor;
             color2 = Color.white;

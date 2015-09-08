@@ -49,25 +49,20 @@ namespace Global {
             root2Prefab = Resources.Load ("Prefabs/DeathRayPlayer2") as GameObject;
             shieldP1 = Resources.Load ("Prefabs/ShieldPlayer1") as GameObject;
             shieldP2 = Resources.Load ("Prefabs/ShieldPlayer2") as GameObject;
+
             GameObject manager = GameObject.FindGameObjectsWithTag("MainCamera")[0];
             stateManager = manager.GetComponent<StateManager>();
-
+            
             //Find all the locations that towers should spawn at from markers
             BuildTowerLocations();
+            SpawnTowers();
         }
       
         public void resetScore(){
-            if (Network.isServer)
-                player1Score = 0;
-            else if(Network.isClient)
-                GetComponent<NetworkView>().RPC("RPCresetScore", RPCMode.Server);
-        }
-
-        [RPC]
-        private void RPCresetScore(){
+            player1Score = 0;
             player2Score = 0;
         }
-		
+
         private void winCondition(){
             int player1Count = 0;
             int player2Count = 0;
@@ -86,7 +81,6 @@ namespace Global {
             if (player2Count == 0){
                 player1HasAllTowers = true;
                 stateManager.status = WorldGameState.EndGame;
-                return;
             }
         }
 
@@ -160,14 +154,15 @@ namespace Global {
         void FixedUpdate() {
             if (Input.GetKey(KeyCode.E))
                 SelectAll(Network.isServer);
-            if (Network.isClient){
-                if(!player2HasAllTowers && !player1HasAllTowers)
-                    return;
-                else
-                    winCondition();
-            } //////////////////////////////NO Client past here
-            if(stateManager.status == WorldGameState.InGame)
+
+            if(!player2HasAllTowers && !player1HasAllTowers)
+                return;
+            else
+                winCondition();
+
+            if (stateManager.status == WorldGameState.InGame)
                 calculateScore ();
+
             if(towerLookup.Count > 1 )
               winCondition ();
         }
@@ -179,51 +174,38 @@ namespace Global {
                     StartCoroutine(entry.Value.SpawnAttack(targetPosition));
             }
             if(ClearSelectionAfterAttack)
-                RPCDeselectTowers(attackingPlayer == ownerShip.Player1);
+                DeselectTowers(attackingPlayer == ownerShip.Player1);
         }
 
-        //Called from individual towers to notify all of the same player's towers to deselect a certain location
-        [RPC]
-        public void RPCDeselectTowers(bool isPlayer1) {
-            //print("deselecting towers");
+        public void DeselectTowers(bool isPlayer1) {
+            
             ownerShip playerToDeselect = (isPlayer1 == true) ? ownerShip.Player1 : ownerShip.Player2;
 
-            foreach (KeyValuePair<Vector3, Tower> entry in towerLookup) {
-                if (entry.Value.selected && entry.Value.myOwner == playerToDeselect) {
+            foreach (KeyValuePair<Vector3, Tower> entry in towerLookup)
+            {
+                if (entry.Value.selected && entry.Value.myOwner == playerToDeselect)
+                {
                     entry.Value.ToggleSelect();
                     entry.Value.updateSprite();
                 }
             }
-        }
-
-        public void DeselectTowers(bool isPlayer1) {
-            if(Network.isServer)
-                RPCDeselectTowers(true);
-            else
-                GetComponent<NetworkView>().RPC("RPCDeselectTowers", RPCMode.Server, false);
+           
         }
 
         //-----------------------------------------------------------------------------------------------------------------------------
         #region SelectAll
 
         //Called from individual towers to notify all of the same player's towers to deselect a certain location
-        [RPC]
-        public void RPCSelectAll(bool isPlayer1) {
+        public void SelectAll(bool isPlayer1) {
             ownerShip playerToDeselect = (isPlayer1 == true) ? ownerShip.Player1 : ownerShip.Player2;
-            foreach (KeyValuePair<Vector3, Tower> entry in towerLookup) {
-                if (!entry.Value.selected && entry.Value.myOwner == playerToDeselect) {
+            foreach (KeyValuePair<Vector3, Tower> entry in towerLookup)
+            {
+                if (!entry.Value.selected && entry.Value.myOwner == playerToDeselect)
+                {
                     entry.Value.ToggleSelect();
                     entry.Value.updateSprite();
                 }
             }
-        }
-
-        public void SelectAll(bool isPlayer1) {
-            print("calling deselecttowers");
-            if (Network.isServer)
-                RPCSelectAll(true);
-            else
-                GetComponent<NetworkView>().RPC("RPCSelectAll", RPCMode.Server, false);
         }
 
         #endregion
@@ -270,24 +252,34 @@ namespace Global {
 
         //Instanciates the towers in all the locations specified by BuildTowerLocations()
         public void SpawnTowers() {
+
+            Debug.Log("Spawn Towers");
+            /*
             GameObject one = (GameObject)Network.Instantiate (shieldP1, new Vector3(182,0,0), Quaternion.Euler (0, 0, 0), 0);
             GameObject two = (GameObject)Network.Instantiate (shieldP1, new Vector3(174,11,0), Quaternion.Euler (0, 0, 0), 0);
             GameObject three = (GameObject)Network.Instantiate (shieldP1, new Vector3(174,-11,0), Quaternion.Euler (0, 0, 0), 0);
             GameObject four = (GameObject)Network.Instantiate (shieldP2, new Vector3(218,0,0), Quaternion.Euler (0, 0, 0), 0);
             GameObject five = (GameObject)Network.Instantiate (shieldP2, new Vector3(226,11,0), Quaternion.Euler (0, 0, 0), 0);
             GameObject six = (GameObject)Network.Instantiate (shieldP2, new Vector3(226,-11,0), Quaternion.Euler (0, 0, 0), 0);
+            */
+            GameObject one = (GameObject)GameObject.Instantiate(shieldP1, new Vector3(182, 0, 0), Quaternion.Euler(0, 0, 0));
+            GameObject two = (GameObject)GameObject.Instantiate(shieldP1, new Vector3(174, 11, 0), Quaternion.Euler(0, 0, 0));
+            GameObject three = (GameObject)GameObject.Instantiate(shieldP1, new Vector3(174, -11, 0), Quaternion.Euler(0, 0, 0));
+            GameObject four = (GameObject)GameObject.Instantiate(shieldP2, new Vector3(218, 0, 0), Quaternion.Euler(0, 0, 0));
+            GameObject five = (GameObject)GameObject.Instantiate(shieldP2, new Vector3(226, 11, 0), Quaternion.Euler(0, 0, 0));
+            GameObject six = (GameObject)GameObject.Instantiate(shieldP2, new Vector3(226, -11, 0), Quaternion.Euler(0, 0, 0));
    
             foreach (KeyValuePair<Vector3, ownerShip> r in mappedRoots) {
                 if(r.Value == ownerShip.Player1){
-                          GameObject aRoot = (GameObject)Network.Instantiate(root1Prefab, r.Key, Quaternion.Euler(0, 0, 0), 0);
+                    GameObject aRoot = (GameObject)GameObject.Instantiate(root1Prefab, r.Key, Quaternion.Euler(0, 0, 0));
                 }
                 else{
-                  GameObject aRoot = (GameObject)Network.Instantiate(root2Prefab, r.Key, Quaternion.Euler(0, 0, 0), 0);
+                    GameObject aRoot = (GameObject)GameObject.Instantiate(root2Prefab, r.Key, Quaternion.Euler(0, 0, 0));
                 }
             }
 
             foreach (KeyValuePair<Vector3, ownerShip> entry in mappedTowers) {
-              GameObject aTower = (GameObject)Network.Instantiate(towerPrefab, entry.Key, Quaternion.Euler(0, 0, 0), 0);
+                GameObject aTower = (GameObject)GameObject.Instantiate(towerPrefab, entry.Key, Quaternion.Euler(0, 0, 0));
               Tower tScript = aTower.GetComponent<Tower>();
               tScript.SwitchOwner(entry.Value);
               switch (entry.Value) {
@@ -308,7 +300,7 @@ namespace Global {
             }
             
             foreach (KeyValuePair<Vector3, ownerShip> entry in mappedShocks) {
-                GameObject aTower = (GameObject)Network.Instantiate(shockPrefab, entry.Key, Quaternion.Euler(0, 0, 0), 0);
+                GameObject aTower = (GameObject)GameObject.Instantiate(shockPrefab, entry.Key, Quaternion.Euler(0, 0, 0));
                 Tower tScript = aTower.GetComponent<Tower>();
                 tScript.SwitchOwner(entry.Value);
                 switch (entry.Value) {

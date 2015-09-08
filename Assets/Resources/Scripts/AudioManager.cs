@@ -5,56 +5,14 @@ namespace Global {
 
     public class AudioManager : MonoBehaviour {
 
-        private WorldGameState currentGameState;
-        private StateManager stateManager;
-
         #region system
         void Start () {
-            GameObject manager = GameObject.FindGameObjectsWithTag("MainCamera")[0];
-            stateManager = manager.GetComponent<StateManager>();
-            currentGameState = WorldGameState.SplashScreen;
+            playStartMenu();
         }
 
         // Update is called once per frame
         void Update () {
-            // gradually increment the volume to bring the player into the experince 
-            // withour startling them!
-            if (currentVolume < setVolume) {
-              currentVolume += volumeIncrement;
-              GetComponent<AudioSource>().volume = currentVolume;
-            }
-            if (currentGameState == stateManager.status) {
-              // if currentGameState == stateManager.status then the game state has not
-              // changed, so the audio does not need to change. return to break out of
-              // update function.
-              return;
-            }
-            // if the gamestate changes then my music will always change!
-            // set the volume to zero and change my gamestate.
-            currentGameState = stateManager.status;
-            switch (currentGameState) {
-                case(WorldGameState.EndGame):
-                    playEndGame();
-                    break;
-                case(WorldGameState.Exit):
-                    playExit();
-                    break;
-                case(WorldGameState.InGame):
-                    playInGame();
-                    break;
-                case(WorldGameState.Pause):
-                    playPause();
-                    break;
-                case(WorldGameState.Quit):
-                    playQuit();
-                    break;
-                case(WorldGameState.SplashScreen):
-                    playSplashScreen();
-                    break;
-                case(WorldGameState.StartMenu):
-                    playStartMenu();
-                    break;
-            }
+
         }
         #endregion
 
@@ -111,10 +69,6 @@ namespace Global {
 
         // switch to start menu background music
         private void playStartMenu(){
-            // if the menu is entered from the splash screen do not change the music
-            if (currentGameState == WorldGameState.SplashScreen) {
-                return;
-            }
             // if the menu is entered from any other screen, change the music to
             // light background music @ 50%
             GetComponent<AudioSource>().clip = musicLightBackground;
