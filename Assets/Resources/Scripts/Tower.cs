@@ -194,15 +194,12 @@ namespace Global{
 		
         void OnMouseOver()
         {
-
             //Only looking for Right clicks
             //Maybe a point of optomization later on; currently this function is called every time the mouse passes over a tower
             if (Input.GetMouseButtonDown(0) && (myOwner == ownerShip.Player2 || myOwner == ownerShip.Neutral))
             {
-                                                           //Server initiates an attack
-                    Manager.AttackToward(transform.position, ownerShip.Player1);
-                    
-             } 
+                Manager.AttackToward(transform.position, ownerShip.Player1);
+            } 
         }
         //--------------------------------------------------------------------------------------------------------------------------------------------------
 		
@@ -255,19 +252,6 @@ namespace Global{
                 yield return new WaitForSeconds(unitSpawnRate); //wait to spawn another
             }	
         }
-        /// <summary>
-        /// Just calls spawn attack for the client. Could have made spawnattack an rpc but that would have meant passing extra pramaters across the network 
-        /// and they're always the same value when called from the client anyway
-        /// </summary>
-        /// <param name="pos"> Position of the tower that was right clicked</param>
-        [RPC]
-        void SpawnAttackForMe(Vector3 pos)
-        {
-            //Hard coding player2 as they are always the client
-            Manager.AttackToward(pos, ownerShip.Player2);
-        }
-        //------------------------------------------------------------------------------------------------------------------------------------------------------
-
         #endregion
       
         void OnTriggerEnter2D(Collider2D other) 

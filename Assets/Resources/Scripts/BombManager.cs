@@ -51,12 +51,6 @@ namespace Global{
             startBomb();
         }
 
-        [RPC]
-        public void RPCchangeOwner(int owner) {
-            this.myOwner = (owner == 1) ? ownerShip.Player1 : ownerShip.Player2;
-            startBomb ();
-        }
-
         public void startBomb() {
             //reset values
             count = 0;

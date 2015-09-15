@@ -110,7 +110,8 @@ namespace Global {
                     TowerQ.Enqueue(node.Key);
                     node.Key.GetComponent<Tower>().Visited = true;
                     if (root.GetComponent<DeathRay>().myOwner == ownerShip.Player1) {
-                        player1Score += 10;
+                        //player1Score += 10; // this was the old version
+                        player1Score += node.Key.GetComponent<Tower>().units;
                         node.Key.GetComponent<Tower>().PlayPlusTen();
                     }
                 }
@@ -139,29 +140,38 @@ namespace Global {
 
         //Adds up all of the units in each players' towers to calculate score
         void FixedUpdate() {
-            if (Input.GetKey(KeyCode.E))
-                SelectAll(true); // select all player1
-
-            if(!player2HasAllTowers && !player1HasAllTowers)
-                return;
-            else
-                winCondition();
-
-            if (stateManager.status == WorldGameState.InGame)
-                
-                calculateScore ();
-
-            if(towerLookup.Count > 1 )
-              winCondition ();
+            
         }
 
         void Update()
         {
+            if (Input.GetKey(KeyCode.E))
+            {
+                SelectAll(true); // select all player1
+            }
 
-            if (stateManager.status == WorldGameState.InGame){
-                Debug.Log("calculateScore()");
+            //---------------------------------------
+            if (!player2HasAllTowers && !player1HasAllTowers)
+            {
+                return;
+            }
+            else
+            {
+                winCondition();
+            }
+
+            //---------------------------------------
+            if (stateManager.status == WorldGameState.InGame)
+            {
                 calculateScore();
             }
+                
+            //---------------------------------------
+            if (towerLookup.Count > 1)
+            {
+                winCondition();
+            }
+                
         }
 
         //Called from individual towers to notify all of the same player's towers to attack a certain location
@@ -248,14 +258,7 @@ namespace Global {
         }
 
         //Instanciates the towers in all the locations specified by BuildTowerLocations()
-        public void SpawnTowers() {
-            //GameObject one = (GameObject)GameObject.Instantiate(shieldP1, new Vector3(182, 0, 0), Quaternion.Euler(0, 0, 0));
-            //GameObject two = (GameObject)GameObject.Instantiate(shieldP1, new Vector3(174, 11, 0), Quaternion.Euler(0, 0, 0));
-            //GameObject three = (GameObject)GameObject.Instantiate(shieldP1, new Vector3(174, -11, 0), Quaternion.Euler(0, 0, 0));
-            //GameObject four = (GameObject)GameObject.Instantiate(shieldP2, new Vector3(218, 0, 0), Quaternion.Euler(0, 0, 0));
-            //GameObject five = (GameObject)GameObject.Instantiate(shieldP2, new Vector3(226, 11, 0), Quaternion.Euler(0, 0, 0));
-            //GameObject six = (GameObject)GameObject.Instantiate(shieldP2, new Vector3(226, -11, 0), Quaternion.Euler(0, 0, 0));
-   
+        public void SpawnTowers() {   
             foreach (KeyValuePair<Vector3, ownerShip> r in mappedRoots) {
                 if(r.Value == ownerShip.Player1){
                     GameObject aRoot = (GameObject)GameObject.Instantiate(root1Prefab, r.Key, Quaternion.Euler(0, 0, 0));

@@ -73,7 +73,6 @@ namespace Global{
         //---------------------------------------------------------------------------
         // plays the logo animation and fades the camera color from grey to white for 6.25 seconds
         private void SplashScreenState(){
-            MainCamera.transform.position = new Vector3 (0, 0, -10);
             deltaTime += Time.deltaTime * 0.08f;
             if(deltaTime < duration) {
                 GetComponent<Camera>().backgroundColor = Color.Lerp(color1, color2, deltaTime);
@@ -85,16 +84,12 @@ namespace Global{
 
         //---------------------------------------------------------------------------
         private void StartMenuState(){
-            MainCamera.orthographicSize = 18;
-            MainCamera.transform.position = new Vector3 (100, 0, -10);
             GetComponent<Camera>().backgroundColor = Color.grey;
         }
 
         //---------------------------------------------------------------------------
         private void InGameState(){
             if (started) {
-                MainCamera.transform.position = new Vector3 (200, 0, -10);
-                MainCamera.orthographicSize = 19;
                 started = false;
             }
             ScrollCamera();
@@ -122,7 +117,6 @@ namespace Global{
 
         private void TutorialState(){
             if (tutorialStarted) {
-                MainCamera.transform.position = new Vector3 (0, -100, -10);
                 tutorialStarted = false;
             }
         }
@@ -135,7 +129,6 @@ namespace Global{
             float currentPos = MainCamera.transform.position.x;
             print ("current pos  = " + currentPos);
             currentPos += pos;
-            MainCamera.transform.position = new Vector3 (currentPos, -100, -10);
         }
         
         private float scrollSpeed = .5f;

@@ -36,7 +36,7 @@ namespace Global{
                 if (Vector2.Distance(mouseStart, mouseEnd) < 15) {
                     RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
                     if ((hit.collider.gameObject.GetComponent<Tower>() == null)) {
-                        manager.DeselectTowers(Network.isServer);
+                        manager.DeselectTowers(true); // true == player1
                         return;
                     }
                 }
@@ -44,7 +44,7 @@ namespace Global{
                     Vector2 topLeft = mainCamera.ScreenToWorldPoint(mouseStart);
                     Vector2 bottomRight = mainCamera.ScreenToWorldPoint(mouseEnd);
                     Collider2D[] colliders = Physics2D.OverlapAreaAll(topLeft, bottomRight);
-                    manager.DeselectTowers(Network.isServer);
+                    manager.DeselectTowers(true); // true == player1
                     foreach (Collider2D c in colliders) {
                         Tower t = c.GetComponent<Tower>();
                         if (t != null) {
@@ -52,8 +52,9 @@ namespace Global{
                                 t.ToggleSelect();
                                 t.updateSprite();
                             }
-                            else if (Network.isClient && t.myOwner == ownerShip.Player2 && t.selected == false) {
-                                t.GetComponent<NetworkView>().RPC("ToggleSelect", RPCMode.Server);
+                            else if (t.myOwner == ownerShip.Player2 && t.selected == false) {
+                                t.ToggleSelect();
+                                //t.updateSprite(); // dont update sprite for player 2 so player 1 does not know selected towers
                             }
                         }
                     }
