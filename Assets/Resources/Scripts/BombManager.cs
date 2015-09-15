@@ -40,19 +40,15 @@ namespace Global{
             //instantiate and deploy particle
             GameObject e = null;
             if (myOwner == ownerShip.Player1) {
-                e = Network.Instantiate (bombPrefab1, this.transform.position, Quaternion.LookRotation (Vector3.forward, Vector3.forward), 0) as GameObject;
+                e = GameObject.Instantiate (bombPrefab1, this.transform.position, Quaternion.LookRotation (Vector3.forward, Vector3.forward)) as GameObject;
             } else if(myOwner == ownerShip.Player2) {
-                e = Network.Instantiate (bombPrefab2, this.transform.position, Quaternion.LookRotation (Vector3.forward, Vector3.forward), 0) as GameObject;
+                e = GameObject.Instantiate (bombPrefab2, this.transform.position, Quaternion.LookRotation (Vector3.forward, Vector3.forward)) as GameObject;
             }
         }
 
         public void changeOwner(ownerShip owner) {
-            if (Network.isServer) {
-                myOwner = owner;
-                startBomb();
-            } else {
-                GetComponent<NetworkView>().RPC ("RPCchangeOwner", RPCMode.Server, (int)owner);
-            }
+            myOwner = owner;
+            startBomb();
         }
 
         [RPC]

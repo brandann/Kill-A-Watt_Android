@@ -101,10 +101,6 @@ namespace Global{
 
         void FixedUpdate()
         {
-            //Client should not call fixed update units passed via synchronized calls
-            if (Network.isClient)
-                return;
-
             //Increment garrisoned units on a constant interval
             if ((Time.realtimeSinceStartup - lastUnitGeneratedTime) > unitIncrementRate)
             {   
@@ -142,30 +138,11 @@ namespace Global{
         #region Magnetize
         public void Magnetize()
         {
-            if (Network.isServer){
-                magnetized = true;
-            }
-            else{
-                GetComponent<NetworkView>().RPC("RPCMagnetize", RPCMode.Server);
-            }
-        }
-        //-----------------------------------------------------------------------------------------------------------------------------------------------
-        [RPC]
-        public void RPCMagnetize()
-        {
             magnetized = true;
         }
+        //-----------------------------------------------------------------------------------------------------------------------------------------------
 
         public void DeMagnetize()
-        {
-            if (Network.isServer)
-                magnetized = false;
-            else
-                GetComponent<NetworkView>().RPC("RPCDeMagnetize", RPCMode.Server);
-        }
-        //-----------------------------------------------------------------------------------------------------------------------------------------------
-        [RPC]
-        public void RPCDeMagnetize()
         {
             magnetized = false;
         }
@@ -175,36 +152,13 @@ namespace Global{
             //print("subUnit");
             if (units > 0)
             {
-                if (Network.isServer)
-                {
-                    units--;
-                }
-                else
-                {
-                    GetComponent<NetworkView>().RPC("rpcSubUnit", RPCMode.Server);
-                }
-            }
-        }
-
-        [RPC]
-        public void rpcSubUnit()
-        {
-            if(units > 0)
                 units--;
+            }
         }
 
         public void Blink()
         {
             blinkCount++;
-            myRender.sprite = blinkSprites[blinkCount % 3];
-            GetComponent<NetworkView>().RPC("RPCBlink", RPCMode.Server);
-        }
-
-        [RPC]
-        public void RPCBlink()
-        {
-            blinkCount++;
-            //print("RPC Blink count" + blinkCount );
             myRender.sprite = blinkSprites[blinkCount % 3];
         }
 
@@ -246,7 +200,8 @@ namespace Global{
             if (Input.GetMouseButtonDown(0) && (myOwner == ownerShip.Player2 || myOwner == ownerShip.Neutral))
             {
                                                            //Server initiates an attack
-                    Manager.AttackToward(transform.position, ownerShip.Player1);  
+                    Manager.AttackToward(transform.position, ownerShip.Player1);
+                    
              } 
         }
         //--------------------------------------------------------------------------------------------------------------------------------------------------
@@ -390,36 +345,12 @@ namespace Global{
             playsound = true;
         }
 
-        //-------------------------------------------------------------------------------------------------------------------------------
-        //Called at network sendrate to sync selected variables
-        void OnSerializeNetworkView(BitStream stream, NetworkMessageInfo info)
-        {
-            int ownedBy = 0;
-            if (stream.isWriting)
-            {
-                stream.Serialize(ref units);
-                ownedBy = (int)myOwner;              //Cant pass our enum must pass Unity objects or primitives
-                stream.Serialize(ref ownedBy);
-                stream.Serialize(ref selected);
-                stream.Serialize(ref magnetized);
-            }
-            else                                    //Client side read units and ownership if changed
-            {
-                stream.Serialize(ref units);             
-                stream.Serialize(ref ownedBy);
-                myOwner = (ownerShip)ownedBy;
-                stream.Serialize(ref selected);
-                stream.Serialize(ref magnetized);
-                updateSprite();
-            }
-        }
         //--------------------------------------------------------------------------------------------------------------------------------------
         #region EnergyGenAnimation
 
         /// <summary>
         /// Called from the server's gamemanager to start the plus ten energy animation
         /// </summary>
-        [RPC]
         public void PlayPlusTen()
         {
             //print("called plus ten");

@@ -48,8 +48,7 @@ namespace Global{
             }
             secondShield.GetComponent<SpriteRenderer> ().enabled = false;
             if (Time.realtimeSinceStartup > startTime + lifeTime) {
-                if(Network.isServer)
-                    Network.Destroy(this.gameObject);
+                Destroy(this.gameObject);
             }
             animateLineColor ();
             getMinions ();
@@ -72,11 +71,11 @@ namespace Global{
               Vector3 to = minion.transform.position;
               float dist = Vector3.Magnitude(from - to);
               if(Mathf.Abs(dist) < 3){
-                  if (Network.isServer){
-                      secondShield.GetComponent<SpriteRenderer> ().enabled = true;
-                      minion.GetComponent<unitBehavior>().makeBurst();
-                      Network.Destroy (minion);
-                  }
+
+                secondShield.GetComponent<SpriteRenderer> ().enabled = true;
+                minion.GetComponent<unitBehavior>().makeBurst();
+                Destroy (minion);
+                  
               }
           }
         }

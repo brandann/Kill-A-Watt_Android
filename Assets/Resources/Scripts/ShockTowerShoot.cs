@@ -52,11 +52,11 @@ namespace Global{
                     lightning (current.transform);
                     if (Time.realtimeSinceStartup - lastShot > fequency){
                         lastShot = Time.realtimeSinceStartup;
-                        if (Network.isServer){
+
                             current.GetComponent<unitBehavior>().makeBurst();
                             audioManager.playShockTower();
-                            Network.Destroy (current);
-                        }
+                            Destroy (current);
+
                     }
                 }else{
                     current = null;

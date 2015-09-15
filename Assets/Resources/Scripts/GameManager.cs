@@ -40,7 +40,7 @@ namespace Global {
         StateManager stateManager;
 
         //Set from inspector to have selections cleared after attacks
-        public bool ClearSelectionAfterAttack = true;
+        public bool ClearSelectionAfterAttack;
         
         void Start() {			
 
@@ -88,6 +88,7 @@ namespace Global {
             GameObject[] rootArray = GameObject.FindGameObjectsWithTag("RootNode");
 
             if (Time.realtimeSinceStartup - lastCalc > fequency) {
+                
                 lastCalc = Time.realtimeSinceStartup;
                 if (rootArray != null) {
                     BFS(rootArray[0]);
@@ -112,10 +113,6 @@ namespace Global {
                         player1Score += 10;
                         node.Key.GetComponent<Tower>().PlayPlusTen();
                     }
-                    if (root.GetComponent<DeathRay>().myOwner == ownerShip.Player2) {
-                        node.Key.GetComponent<Tower>().GetComponent<NetworkView>().RPC("PlayPlusTen", RPCMode.Others);
-                        player2Score += 10;
-                    }
                 }
             }
 
@@ -126,10 +123,6 @@ namespace Global {
                     if (root.GetComponent<DeathRay>().myOwner == ownerShip.Player1) {
                         player1Score += 10;
                         currentNode.GetComponent<Tower>().PlayPlusTen();
-                    }
-                    if (root.GetComponent<DeathRay>().myOwner == ownerShip.Player2) {
-                        currentNode.GetComponent<Tower>().GetComponent<NetworkView>().RPC("PlayPlusTen", RPCMode.Others);
-                        player2Score += 10;
                     }
                     currentNode.GetComponent<Tower>().Visited = true;
                 }
@@ -147,7 +140,7 @@ namespace Global {
         //Adds up all of the units in each players' towers to calculate score
         void FixedUpdate() {
             if (Input.GetKey(KeyCode.E))
-                SelectAll(Network.isServer);
+                SelectAll(true); // select all player1
 
             if(!player2HasAllTowers && !player1HasAllTowers)
                 return;
@@ -155,10 +148,20 @@ namespace Global {
                 winCondition();
 
             if (stateManager.status == WorldGameState.InGame)
+                
                 calculateScore ();
 
             if(towerLookup.Count > 1 )
               winCondition ();
+        }
+
+        void Update()
+        {
+
+            if (stateManager.status == WorldGameState.InGame){
+                Debug.Log("calculateScore()");
+                calculateScore();
+            }
         }
 
         //Called from individual towers to notify all of the same player's towers to attack a certain location
@@ -246,12 +249,12 @@ namespace Global {
 
         //Instanciates the towers in all the locations specified by BuildTowerLocations()
         public void SpawnTowers() {
-            GameObject one = (GameObject)GameObject.Instantiate(shieldP1, new Vector3(182, 0, 0), Quaternion.Euler(0, 0, 0));
-            GameObject two = (GameObject)GameObject.Instantiate(shieldP1, new Vector3(174, 11, 0), Quaternion.Euler(0, 0, 0));
-            GameObject three = (GameObject)GameObject.Instantiate(shieldP1, new Vector3(174, -11, 0), Quaternion.Euler(0, 0, 0));
-            GameObject four = (GameObject)GameObject.Instantiate(shieldP2, new Vector3(218, 0, 0), Quaternion.Euler(0, 0, 0));
-            GameObject five = (GameObject)GameObject.Instantiate(shieldP2, new Vector3(226, 11, 0), Quaternion.Euler(0, 0, 0));
-            GameObject six = (GameObject)GameObject.Instantiate(shieldP2, new Vector3(226, -11, 0), Quaternion.Euler(0, 0, 0));
+            //GameObject one = (GameObject)GameObject.Instantiate(shieldP1, new Vector3(182, 0, 0), Quaternion.Euler(0, 0, 0));
+            //GameObject two = (GameObject)GameObject.Instantiate(shieldP1, new Vector3(174, 11, 0), Quaternion.Euler(0, 0, 0));
+            //GameObject three = (GameObject)GameObject.Instantiate(shieldP1, new Vector3(174, -11, 0), Quaternion.Euler(0, 0, 0));
+            //GameObject four = (GameObject)GameObject.Instantiate(shieldP2, new Vector3(218, 0, 0), Quaternion.Euler(0, 0, 0));
+            //GameObject five = (GameObject)GameObject.Instantiate(shieldP2, new Vector3(226, 11, 0), Quaternion.Euler(0, 0, 0));
+            //GameObject six = (GameObject)GameObject.Instantiate(shieldP2, new Vector3(226, -11, 0), Quaternion.Euler(0, 0, 0));
    
             foreach (KeyValuePair<Vector3, ownerShip> r in mappedRoots) {
                 if(r.Value == ownerShip.Player1){
@@ -302,27 +305,6 @@ namespace Global {
                         break;
                 }
                 towerLookup.Add(entry.Key, aTower.GetComponent<Tower>());
-            }
-        }
-
-        void OnSerializeNetworkView(BitStream stream, NetworkMessageInfo info) {
-            if (stream.isWriting) {
-                int p1score = (int)player1Score;
-                stream.Serialize(ref p1score);
-                int p2score = (int)player2Score;
-                stream.Serialize(ref p2score);
-                stream.Serialize(ref player1HasAllTowers);
-                stream.Serialize(ref player2HasAllTowers);
-            }
-            else {
-                int p1score = 0;
-                stream.Serialize(ref p1score);
-                player1Score = p1score;
-                int p2score = 0;
-                stream.Serialize(ref p2score);
-                player2Score = p2score;
-                stream.Serialize(ref player1HasAllTowers);
-                stream.Serialize(ref player2HasAllTowers);
             }
         }
     }

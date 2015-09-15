@@ -26,18 +26,13 @@ namespace Global{
         // Add stuff to deathray later
         void Update () {
             Vector3 mousePos = Camera.main.ScreenToWorldPoint (Input.mousePosition);
-            if (Network.isServer && science.currentAbility != ScientistAbility.ability.none && myOwner == ownerShip.Player1)
+            if (science.currentAbility != ScientistAbility.ability.none && myOwner == ownerShip.Player1)
               rotateWeapon (mousePos);
-            if(Network.isClient && science.currentAbility != ScientistAbility.ability.none && myOwner == ownerShip.Player2)
-              GetComponent<NetworkView>().RPC("RPCrotateWeapon", RPCMode.Server,mousePos);
+            if(science.currentAbility != ScientistAbility.ability.none && myOwner == ownerShip.Player2)
+                rotateWeapon(mousePos);
         }
       
         public void rotateWeapon(Vector3 position) {
-            rayGunSprite.rotation = Quaternion.Euler (0,0, Mathf.Atan2(position.y - transform.position.y,position.x - transform.position.x) * Mathf.Rad2Deg);
-        }
-
-        [RPC]
-        public void RPCrotateWeapon(Vector3 position){
             rayGunSprite.rotation = Quaternion.Euler (0,0, Mathf.Atan2(position.y - transform.position.y,position.x - transform.position.x) * Mathf.Rad2Deg);
         }
     }

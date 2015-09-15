@@ -9,7 +9,6 @@ namespace Global{
         #region scripts
         StateManager stateManager;
         GameManager  gameManager;
-        NetworkManager networkManager;
         ScientistAbility scientistAbility;
         #endregion
 
@@ -96,13 +95,8 @@ namespace Global{
             GameObject manager = GameObject.FindGameObjectsWithTag("MainCamera")[0];
             stateManager = manager.GetComponent<StateManager>();
             gameManager = manager.GetComponent<GameManager>();
-            networkManager = manager.GetComponent<NetworkManager>();
             scientistAbility = manager.GetComponent<ScientistAbility> ();
             audioManager = GameObject.Find ("Main Camera").GetComponent<AudioManager> ();
-
-            // need to get score from game mananger
-            if(networkManager == null)
-                Debug.Log("networkmanager is null");
               
             SubMenu = false;
             currentLeft = 5;
@@ -125,14 +119,8 @@ namespace Global{
               gameManager.player2Score = totalScore;
             GUIstatus =  stateManager.status;
             switch (GUIstatus) {
-                case WorldGameState.Tutorial:
-                    TutorialButtons();
-                    break;
                 case WorldGameState.Pause:
                     PauseButton();
-                    break;
-                case WorldGameState.StartMenu:
-                    StartMenuGUI();
                     break;
                 case WorldGameState.InGame:
                     InGameGUI();
@@ -165,9 +153,9 @@ namespace Global{
                 count = i;
                 yield return new WaitForSeconds(1f);
             }
-            if (Network.isServer) {
-                gameManager.SpawnTowers ();
-            }
+            Debug.Log("Spawning Towers ------");
+            gameManager.SpawnTowers ();
+            
             stateManager.status = WorldGameState.InGame;
         }
 
@@ -185,8 +173,6 @@ namespace Global{
                     //quitting returns the player to the start menu
                     //probably need logic to exit both players
                     audioManager.playGUI();
-                    Network.Disconnect();
-                    serverWaiting = false;
                 }
                 Rect ExitButtonRect = new Rect ((float)(ScreenW * .405),
                     (float)(ScreenH * .45), (float)(ScreenW * .18), (float)(ScreenH * .05));
@@ -227,9 +213,7 @@ namespace Global{
         //-----------------------------------------------------------------------------
         private void InGameGUI(){
             //this code is to make the button a independent of resolution
-            if(Network.isServer && gameManager.player1Score == totalScore)
-                abilityButtons ();
-            if (Network.isClient && gameManager.player2Score == totalScore)
+            if(gameManager.player1Score == totalScore)
                 abilityButtons ();
             Rect MenuButtonRect = new Rect ((float)(ScreenW * .01), (float)(ScreenH - (ScreenH * .01 + (float)(ScreenW * .030))),
                                             (float)(ScreenW * .030), (float)(ScreenW * .030));
@@ -299,107 +283,7 @@ namespace Global{
              * */
         }
 
-        //-----------------------------------------------------------------------------
-        private void StartMenuGUI(){
-            Rect TutorialStart = new Rect ((float)(ScreenW * .79), (float)(ScreenH - (ScreenH * .03 + ScreenW * .05)),
-                                            (float)(ScreenW * .2), (float)(ScreenH * .1));
-                                            
-            if(GUI.Button (TutorialStart,"",tutorialButton)){
-                audioManager.playGUI();
-                stateManager.status = WorldGameState.Tutorial;
-            }
-            Rect PlayButtonRect = new Rect ((float)(ScreenW * .03), (float)(ScreenH * .76),
-                                            (float)(ScreenW * .2), (float)(ScreenH * .1));
 
-            SubMenu =  GUI.Toggle(PlayButtonRect, SubMenu, "",PlayButton);
-            if (SubMenu && !serverWaiting) {
-                StartSubMenu();
-            }
-            Rect MenuButtonRect = new Rect ((float)(ScreenW * .03), (float)(ScreenH - (ScreenH * .03 + ScreenW * .05)),
-                                            (float)(ScreenW * .05), (float)(ScreenW * .05));
-                                            
-            if(GUI.Button (MenuButtonRect,"",GearIconStyle)){
-                //set the last state to pull up the correct menu
-                audioManager.playGUI();
-                lastState = stateManager.status;
-                stateManager.status = WorldGameState.Pause;
-            }
-            if (serverWaiting) {
-                Rect EditBoxRect = new Rect ((float)(ScreenW * .395), (float)(ScreenH * .31), (float)(ScreenW * .2), (float)(ScreenH * .25));
-                GUI.Box(EditBoxRect,"waiting for someone to join",MenuButtons);
-            }
-        }
-
-        //-----------------------------------------------------------------------------
-        private void StartSubMenu(){
-            Rect SubMenuBox = new Rect ((float)(ScreenW * .03), (float)(ScreenH * .22), (float)(ScreenW * .4), (float)(ScreenH * .54));
-            GUI.Box (SubMenuBox,"",MenuBox);
-
-            Rect SubSubMenuBox = new Rect ((float)(ScreenW * .06), (float)(ScreenH * .32), (float)(ScreenW * .33), (float)(ScreenH * .37));
-            GUI.Box (SubSubMenuBox,"",Sub_MenuBox);
-            
-            Rect CreateButtonRect = new Rect ((float)(ScreenW * .06), (float)(ScreenH * .25),
-                                            (float)(ScreenW * .15), (float)(ScreenH * .05));
-
-            if (GUI.Button (CreateButtonRect, "",CreateButton) && textBoxSelected == false) {				
-                textBoxSelected = true;
-                audioManager.playGUI();
-            }
-
-            if (textBoxSelected) {
-                Rect EditBoxRect = new Rect ((float)(ScreenW * .395), (float)(ScreenH * .31), (float)(ScreenW * .2), (float)(ScreenH * .25));
-                GUI.Box(EditBoxRect,"",MenuButtons);
-
-                Rect TextFieldRect = new Rect ((float)(ScreenW * .405), (float)(ScreenH * .38), (float)(ScreenW * .18), (float)(ScreenH * .05));
-              
-                networkManager.gameName = GUI.TextField(TextFieldRect,networkManager.gameName,25);
-
-                Rect OkayBoxRect = new Rect ((float)(ScreenW * .405), (float)(ScreenH * .45), (float)(ScreenW * .07), (float)(ScreenH * .05));
-                if(GUI.Button(OkayBoxRect,"OK",MenuButtons)){
-                    networkManager.StartServer(); // comment out to skip client waiting
-                    textBoxSelected = false; // comment out to skip client waiting
-                    serverWaiting = true; // comment out to skip client waiting
-                    audioManager.playGUI();
-                }
-
-                Rect CancelBoxRect = new Rect ((float)(ScreenW * .49), (float)(ScreenH * .45), (float)(ScreenW * .07), (float)(ScreenH * .05));
-                if(GUI.Button(CancelBoxRect,"Cancel",MenuButtons)){
-                    textBoxSelected = false;
-                    audioManager.playGUI();
-                }
-            }
-
-            Rect JoinButtonRect = new Rect ((float)(ScreenW * .24), (float)(ScreenH * .25),
-                                            (float)(ScreenW * .15), (float)(ScreenH * .05));
-
-            if (GUI.Button (JoinButtonRect, "",JoinButton) && textBoxSelected == false && serverSelected == true) {
-                networkManager.JoinServer(networkManager.hostList[selected]);
-                audioManager.playGUI();
-            }
-            
-            Rect scrollViewRect = new Rect ((float)(ScreenW * .06), (float)(ScreenH * .32), (float)(ScreenW * .33), (float)(ScreenH * .37));
-            Rect subScrollView = new Rect ((float)(ScreenW * .06), (float)(ScreenH * .32), (float)(ScreenW * .30), ScreenH);
-
-            scrollPosition = GUI.BeginScrollView(scrollViewRect, scrollPosition, subScrollView, false,true);
-
-            if(networkManager.hostList != null){
-                for (int i = 0; i < networkManager.hostList.Length; i++)
-                {
-                    Rect hostButtonRect = new Rect((float)(ScreenW * .08),(float)((ScreenH * .32) + (ScreenH * .05 * i)), 
-                                                     (float)(ScreenW * .31), (float)(ScreenH * .05));
-
-                    if(i == selected){
-                        GUI.Button(hostButtonRect, networkManager.hostList[i].gameName,selectedStyle);
-                    }
-                    else if (GUI.Button(hostButtonRect, networkManager.hostList[i].gameName,DropDown)){
-                        selected = i;
-                        serverSelected = true;
-                        audioManager.playGUI();
-                    }
-                }
-            }
-            GUI.EndScrollView();
-        }
       
         //-----------------------------------------------------------------------------
         float timer;
@@ -426,35 +310,9 @@ namespace Global{
         }
 
         private void backToStart() {
-            Network.Disconnect ();
+            Debug.Log("GUIManager: backtostart() -- click me if game isnt going back to start...");
         }
         
-        //-----------------------------------------------------------------------------
-        private void TutorialButtons(){
-            // dumb buttons for end game alpha test 
-
-            Rect Previous = new Rect ((float)(ScreenW*.47), 
-                                      (float)(ScreenH* .005), (float)(ScreenW * .06), (float)(ScreenH * .1));
-            if (GUI.Button (Previous, "Previous")) {
-                stateManager.CameraPosTutorial(-100);
-                audioManager.playGUI();
-            }
-        
-            Rect Next = new Rect ((float)(ScreenW*.47 + (ScreenW * .06)), 
-                                  (float)(ScreenH* .005), (float)(ScreenW * .06), (float)(ScreenH * .1));
-            if(GUI.Button (Next,"Next")){
-                stateManager.CameraPosTutorial(100);
-                audioManager.playGUI();
-            }
-
-            Rect Finished = new Rect ((float)(ScreenW*.47 + (ScreenW * .12)), 
-                                      (float)(ScreenH* .005), (float)(ScreenW * .06), (float)(ScreenH * .1));
-            if (GUI.Button (Finished, "Done")) {
-                stateManager.status = WorldGameState.StartMenu;
-                stateManager.tutorialStarted = true;
-                audioManager.playGUI();
-            }
-        }
     //-----------------------------------------------------------------------------
         private void abilityButtons(){
             if (scientistAbility.currentAbility != ScientistAbility.ability.ability0) 
@@ -463,9 +321,9 @@ namespace Global{
                                           (float)(ScreenH * .015), (float)(ScreenW * .06), (float)(ScreenH * .09));
                 if (GUI.Button (Ability0, "", ShieldButton)|| Input.GetKey("1")) {
                     audioManager.playGUI();
-                    if (Network.isServer && gameManager.player1Score == totalScore) {
+                    if (gameManager.player1Score == totalScore) {
                         scientistAbility.setAbility0 (ownerShip.Player1);
-                    } else if (Network.isClient && gameManager.player2Score == totalScore) {
+                    } else if (gameManager.player2Score == totalScore) {
                         scientistAbility.setAbility0 (ownerShip.Player2);
                     }
                 }
@@ -482,9 +340,9 @@ namespace Global{
                                         (float)(ScreenH * .015), (float)(ScreenW * .06), (float)(ScreenH * .09));
               if (GUI.Button (Ability1, "", BombButton) || Input.GetKey("2")) {
                   audioManager.playGUI();
-                  if (Network.isServer && gameManager.player1Score == totalScore) {
+                  if (gameManager.player1Score == totalScore) {
                       scientistAbility.setAbility1 (ownerShip.Player1);
-                  } else if (Network.isClient && gameManager.player2Score == totalScore) {
+                  } else if (gameManager.player2Score == totalScore) {
                       scientistAbility.setAbility1 (ownerShip.Player2);
                   }
               }
@@ -499,10 +357,10 @@ namespace Global{
                                       (float)(ScreenH * .015), (float)(ScreenW * .06), (float)(ScreenH * .09));
               if (GUI.Button(Ability2, "",MagnetButton)|| Input.GetKey("3")) {
                   audioManager.playGUI();
-                  if (Network.isServer && gameManager.player1Score == totalScore) {
+                  if (gameManager.player1Score == totalScore) {
                       scientistAbility.setAbility2(ownerShip.Player1);
                   }
-                  else if (Network.isClient && gameManager.player2Score == totalScore) {
+                  else if (gameManager.player2Score == totalScore) {
                       scientistAbility.setAbility2(ownerShip.Player2);
                   }
               }

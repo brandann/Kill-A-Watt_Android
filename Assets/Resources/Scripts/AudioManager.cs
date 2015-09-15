@@ -99,85 +99,52 @@ namespace Global {
 
         #region ShockTower
         public void playShockTower() {
-            Debug.Log ("playShockTower");
-            GetComponent<NetworkView>().RPC("RPCplayShockTower", RPCMode.AllBuffered);
-        }
-        
-        [RPC] private void RPCplayShockTower() {
-            Debug.Log ("RPCplayShockTower");
-            GetComponent<AudioSource>().PlayOneShot (clipShockTower);
+            GetComponent<AudioSource>().PlayOneShot(clipShockTower);
         }
         #endregion
 
         #region Shield
         public void playShield() {
-            Debug.Log ("playShield");
             GetComponent<AudioSource>().PlayOneShot(clipShield);
         }
         #endregion
 
         #region Bomb
         public void playBomb() {
-            Debug.Log ("playBomb");
-            GetComponent<NetworkView>().RPC("RPCplayBomb", RPCMode.AllBuffered);
-        }
-        
-        [RPC] private void RPCplayBomb() {
-            Debug.Log ("RPCplayBomb");
-            GetComponent<AudioSource>().PlayOneShot (clipBomb);
+            GetComponent<AudioSource>().PlayOneShot(clipBomb);
         }
         #endregion
 
         #region Magnet
         public void playMagnet() {
-            Debug.Log ("playMagnet");
-            GetComponent<NetworkView>().RPC("RPCplayMagnet", RPCMode.AllBuffered);
-        }
-        
-        [RPC] private void RPCplayMagnet() {
-            Debug.Log ("RPCplayMagnet");
-            GetComponent<AudioSource>().PlayOneShot (clipMagnet);
+            GetComponent<AudioSource>().PlayOneShot(clipMagnet);
         }
         #endregion
 
         #region MinionCollision
         //-----------------------------------------------------------------------------
-        // play a sound via the network when 2 minions collide
+        // play a sound  when 2 minions collide
         public void playMinionCollision() {
-            Debug.Log ("playMinionCollision");
-            GetComponent<NetworkView>().RPC("RPCplayMinionCollision", RPCMode.AllBuffered);
-        }
-        
-        [RPC] private void RPCplayMinionCollision() {
-            Debug.Log ("RPCplayMinionCollision");
-            GetComponent<AudioSource>().PlayOneShot (clipMinionCollision);
+            GetComponent<AudioSource>().PlayOneShot(clipMinionCollision);
         }
         #endregion
 
         #region TowerTakeOver
         //-----------------------------------------------------------------------------
-        // play a sound via the network when the tower becomes neutural controlled
+        // play a sound  when the tower becomes neutural controlled
         public void playTowerTakeover0(){
-            Debug.Log ("playTowerTakeover0");
-            GetComponent<NetworkView>().RPC("RPCplayTowerTakeover0", RPCMode.AllBuffered);
-        }
-        
-        [RPC] public void RPCplayTowerTakeover0() {
-            Debug.Log ("RPCplayTowerTakeover0");
-            GetComponent<AudioSource>().PlayOneShot (clipTower0TakeOver);
+            GetComponent<AudioSource>().PlayOneShot(clipTower0TakeOver);
         }
         
         //-----------------------------------------------------------------------------
-        // play a sound via the network when the tower becomes player1 controlled
+        // play a sound when the tower becomes player1 controlled
         public void playTowerTakeover1(){
-            Debug.Log ("playTowerTakeover1");
             GetComponent<AudioSource>().PlayOneShot(clipTower1TakeOver);
         }
       
         //-----------------------------------------------------------------------------
-        // play a sound via the network when the tower becomes player2 controlled
+        // play a sound when the tower becomes player2 controlled
         public void playTowerTakeover2(){
-            Debug.Log ("playTowerTakeover2");
             GetComponent<AudioSource>().PlayOneShot(clipTower2TakeOver);
         }
         #endregion

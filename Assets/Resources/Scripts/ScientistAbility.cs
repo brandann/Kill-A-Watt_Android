@@ -119,13 +119,13 @@ namespace Global {
             if (Input.GetMouseButton (0)) {
                 if (tower != null) {
                     if (shieldOwner == ownerShip.Player1 && tower.myOwner == ownerShip.Player1) {
-                        GameObject one = (GameObject)Network.Instantiate (shieldP1, tower.transform.position, Quaternion.Euler (0, 0, 0), 0);
+                        GameObject one = (GameObject) Instantiate (shieldP1, tower.transform.position, Quaternion.Euler (0, 0, 0));
                         currentAbility = ability.none;
                         gameManager.resetScore ();
                         tower = null;
                         overMyTower = false;
                     } else if (shieldOwner == ownerShip.Player2 && tower.myOwner == ownerShip.Player2) {
-                        GameObject two = (GameObject)Network.Instantiate (shieldP2, tower.transform.position, Quaternion.Euler (0, 0, 0), 0);
+                        GameObject two = (GameObject) Instantiate (shieldP2, tower.transform.position, Quaternion.Euler (0, 0, 0));
                         currentAbility = ability.none;
                         gameManager.resetScore ();
                         tower = null;
@@ -158,8 +158,7 @@ namespace Global {
             }
             if (Input.GetMouseButton (0)) {
                 Vector3 mousePos = Camera.main.ScreenToWorldPoint (Input.mousePosition);
-                GameObject e = Network.Instantiate (bombManagerPrefab, new Vector3(mousePos.x,mousePos.y,0), 
-                                                    Quaternion.LookRotation (Vector3.forward, Vector3.forward), 0) as GameObject;
+                GameObject e = Instantiate (bombManagerPrefab, new Vector3(mousePos.x,mousePos.y,0), Quaternion.LookRotation (Vector3.forward, Vector3.forward)) as GameObject;
                 BombManager BM = e.GetComponent<BombManager> ();
                 if (BM != null) {
                     BM.changeOwner (bombOwner);
@@ -218,7 +217,7 @@ namespace Global {
                     return;
                 if (thingClicked.myOwner == ownerShip.Neutral || thingClicked.myOwner == magThrower)
                     return;
-                    GameObject mag = (GameObject)Network.Instantiate(magnetPrefab, throwMagFrom, Quaternion.Euler(0, 0, 0), 0);
+                    GameObject mag = (GameObject) Instantiate(magnetPrefab, throwMagFrom, Quaternion.Euler(0, 0, 0));
                     Vector2 toMouse = (Camera.main.ScreenToWorldPoint(Input.mousePosition) - throwMagFrom) * magForce;
                     mag.GetComponent<Rigidbody2D>().AddForce(toMouse);
                     mag.GetComponent<Rigidbody2D>().AddTorque(magTorque);

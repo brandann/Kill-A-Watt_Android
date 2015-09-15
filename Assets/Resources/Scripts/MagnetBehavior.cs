@@ -66,10 +66,8 @@ namespace Global
                     Vector3 dest = unitToLoad.GetComponent<unitBehavior>().destination = Vector3.zero;
                     Vector3 dir = otherBehavior.gameObject.transform.rotation.eulerAngles;
                     dir = new Vector3(dir.x, dir.y, dir.z + 180);
-                    Network.Destroy(otherCollider.gameObject);
-                    GameObject flippedUnit =
-                        (GameObject)Network.Instantiate(
-                                             unitToLoad, loadAt, Quaternion.Euler(dir), 0);
+                    GameObject.Destroy(otherCollider.gameObject);
+                    GameObject flippedUnit = GameObject.Instantiate(unitToLoad, loadAt, Quaternion.Euler(dir)) as GameObject;
                     alreadyCollidedWith.Add(flippedUnit);
                 }
                 else if (otherCollider == target) { //Must be tower
@@ -109,7 +107,7 @@ namespace Global
                     Quaternion rotation = Quaternion.LookRotation(t.gameObject.transform.position - points[pointNum % (numPoints - 1)], Vector3.forward);
                     rotation.x = 0;
                     rotation.y = 0;            
-                    GameObject go = (GameObject)Network.Instantiate(rogueUnit, points[pointNum % (numPoints - 1)],rotation , 0);
+                    GameObject go = GameObject.Instantiate(rogueUnit, points[pointNum % (numPoints - 1)],rotation ) as GameObject;
                     t.SubUnit();
                 }
                 t.Blink();
@@ -118,7 +116,7 @@ namespace Global
             }
             t.DeMagnetize();
             t.updateSprite();
-            Network.Destroy(this.gameObject);
+            GameObject.Destroy(this.gameObject);
             yield return 0;
         }
     }
