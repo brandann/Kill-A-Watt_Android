@@ -18,6 +18,7 @@ namespace Global
             player2Sprite = Resources.Load("Textures/Tower/GeneratorBlue", typeof(Sprite)) as Sprite;
             player1SelectdSprite = Resources.Load("Textures/Tower/GeneratorYellowSelected", typeof(Sprite)) as Sprite;
             player2SelectdSprite = Resources.Load("Textures/Tower/GeneratorBlueSelected", typeof(Sprite)) as Sprite;
+            MAXUNITS = 50;
 
             base.Init();
         }

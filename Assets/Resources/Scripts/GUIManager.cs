@@ -63,7 +63,7 @@ namespace Global{
         private bool SubMenu;
 
         #region score variables
-        private float totalScore = 750;
+        private float totalScore = 1500;
         private float currentLeft;
         public float scoreLeft;
         public float scoreRight;

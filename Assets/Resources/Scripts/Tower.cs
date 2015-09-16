@@ -22,7 +22,7 @@ namespace Global{
         #endregion
         
         #region Unit Variables
-        private const float MAXUNITS = 50;
+        protected float MAXUNITS = 0;
         private GameObject Player1UnitPrefab = null;
         private GameObject Player2UnitPrefab = null;
         private float lastUnitGeneratedTime = 0;
@@ -102,7 +102,7 @@ namespace Global{
                 lastUnitGeneratedTime = Time.realtimeSinceStartup;
             }
 
-            if (!UpgradeActive && Units == MAXUNITS)
+            if (!UpgradeActive && Units >= MAXUNITS)
             {
                 if (myOwner == ownerShip.Player1)
                 {
@@ -110,7 +110,7 @@ namespace Global{
                 }
                 UpgradeActive = true;
             }
-            else if (UpgradeActive && Units != MAXUNITS)
+            else if (UpgradeActive && Units < MAXUNITS)
             {
                 UpgradeBtnObject.SetActive(false);
                 UpgradeActive = false;
