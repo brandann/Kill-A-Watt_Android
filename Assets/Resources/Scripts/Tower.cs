@@ -4,33 +4,32 @@ namespace Global{
 	public class Tower : MonoBehaviour
     {
         #region Other GameObjects
-        public GameManager Manager;
+        private GameManager Manager;
         private Camera sceneCam; //Needed to draw GUI labels centered in world cordinates
-        public SpriteRenderer myRender;
+        private SpriteRenderer myRender;
         private Transform myPlusTen; 
         #endregion
 
         #region Tower Properties
-        public bool Visited;
+        public bool _visited;
         public ownerShip myOwner; //Player this tower belongs go
-        public int units; //Number of garrisoned units should be set at runtime
-        public bool selected = false;
+        private int units; //Number of garrisoned units should be set at runtime
+        private bool selected = false;
         public GUIStyle GUIplayer1;
         public GUIStyle GUIplayer2;
         public GUIStyle GUIneutral;
         private bool magnetized = false;
-        private bool SOCCERMODE = false;
         #endregion
         
         #region Unit Variables
         private const float MAXUNITS = 50;
-        public GameObject Player1UnitPrefab = null, Player2UnitPrefab = null,
-                          SoccerPrefab = null     , EggPrefab = null;
-        public float percentOfUnitsPerAttack = 0.5f;                           
-        //When and how long units are added to the garrison
+        private GameObject Player1UnitPrefab = null;
+        private GameObject Player2UnitPrefab = null;
         private float lastUnitGeneratedTime = 0;
-        public float unitIncrementRate = 4;
         private float unitSpawnRate = .5f; //Time between unit spawns in seconds
+
+        public float percentOfUnitsPerAttack;                                   
+        public float unitIncrementRate;
         public int attackedDamage;
         
         
@@ -52,7 +51,7 @@ namespace Global{
         AudioManager audioManager;
 
         #region Sprites 
-        private Sprite neutralSprite = null,
+        protected Sprite neutralSprite = null,
                         player1Sprite = null,
                         player2Sprite = null,
                         player1SelectdSprite = null,
@@ -62,44 +61,28 @@ namespace Global{
         #endregion	
 
         void Awake () {
-            audioManager = GameObject.Find ("Main Camera").GetComponent<AudioManager> ();
-            Visited = false;
-            Manager = GameObject.Find ("Main Camera").GetComponent<GameManager>();
+            Init();
+        }
+
+        virtual protected void Init()
+        {
+            audioManager = GameObject.Find("Main Camera").GetComponent<AudioManager>();
+            _visited = false;
+            Manager = GameObject.Find("Main Camera").GetComponent<GameManager>();
             GameObject go = GameObject.FindGameObjectWithTag("MainCamera");
             sceneCam = go.GetComponent<Camera>();
             Player1UnitPrefab = Resources.Load("Prefabs/Player1Unit") as GameObject;
             Player2UnitPrefab = Resources.Load("Prefabs/Player2Unit") as GameObject;
-            SoccerPrefab = Resources.Load("Prefabs/SoccerUnit") as GameObject;
-            EggPrefab = Resources.Load("Prefabs/EggUnit") as GameObject;
             ShockRogueSprite = Resources.Load("Textures/Tower/ShockTowerRogue", typeof(Sprite)) as Sprite;
             TowerRogueSprite = Resources.Load("Textures/Tower/GeneratorRogue", typeof(Sprite)) as Sprite;
             blinkSprites = new Sprite[3];
             myRender = (SpriteRenderer)GetComponent<Renderer>();
             myPlusTen = transform.FindChild("TenPlusPlus");
-                
-            if (this.name == "tower(Clone)") {
-                neutralSprite = Resources.Load ("Textures/Tower/GeneratorNeutral", typeof(Sprite)) as Sprite;
-                player1Sprite = Resources.Load ("Textures/Tower/GeneratorYellow", typeof(Sprite)) as Sprite;
-                player2Sprite = Resources.Load ("Textures/Tower/GeneratorBlue", typeof(Sprite)) as Sprite;
-                player1SelectdSprite = Resources.Load ("Textures/Tower/GeneratorYellowSelected", typeof(Sprite)) as Sprite;
-                player2SelectdSprite = Resources.Load ("Textures/Tower/GeneratorBlueSelected", typeof(Sprite)) as Sprite;
-                blinkSprites[0] = player1Sprite;
-                blinkSprites[1] = player2Sprite;
-                blinkSprites[2] = TowerRogueSprite;
-            } 
-            else if (this.name == "ShockTower(Clone)") {
-                neutralSprite = Resources.Load ("Textures/Tower/ShockTowerNeutral", typeof(Sprite)) as Sprite;
-                player1Sprite = Resources.Load ("Textures/Tower/ShockTowerYellow", typeof(Sprite)) as Sprite;
-                player2Sprite = Resources.Load ("Textures/Tower/ShockTowerBlue", typeof(Sprite)) as Sprite;
-                player1SelectdSprite = Resources.Load ("Textures/Tower/ShockTowerYellowSelected", typeof(Sprite)) as Sprite;
-                player2SelectdSprite = Resources.Load ("Textures/Tower/ShockTowerBlueSelected", typeof(Sprite)) as Sprite;
-                blinkSprites[0] = player1Sprite;
-                blinkSprites[1] = player2Sprite;
-                blinkSprites[2] = ShockRogueSprite;
-                
-            }
+
+            blinkSprites[0] = player1Sprite;
+            blinkSprites[1] = player2Sprite;
+            blinkSprites[2] = TowerRogueSprite;
             Selection = SelectionGO.GetComponent<SpriteRenderer>();
-            
         }
     
         //-----------------------------------------------------------------------------------------------------------------------------------------
@@ -179,19 +162,14 @@ namespace Global{
                     myRender.sprite = neutralSprite;
                     break;
                 case ownerShip.Player1:
-                    
-
-                        if(selected)
-                        {
-                            //myRender.sprite = player1SelectdSprite;
-                            Selection.enabled = true;
-                            break;
-                        }
-                        //myRender.sprite = player1Sprite;
-                        Selection.enabled = false;
+                    if(selected) {
+                        Selection.enabled = true;
+                        break;
+                    }
+                    Selection.enabled = false;
                     break;
                 case ownerShip.Player2:
-                        myRender.sprite = player2Sprite;
+                    myRender.sprite = player2Sprite;
                     break;
                 default:
                     Debug.LogError("Invalid ownership in updateSprite");
@@ -227,14 +205,7 @@ namespace Global{
 
             GameObject prefabToSpawn;
             //Select the proper unit prefab to spawn
-            if (!SOCCERMODE)
-            {
-                prefabToSpawn = (myOwner == ownerShip.Player1) ? Player1UnitPrefab : Player2UnitPrefab;
-            }
-            else
-            {
-                prefabToSpawn = (myOwner == ownerShip.Player1) ? SoccerPrefab : EggPrefab;
-            }
+            prefabToSpawn = (myOwner == ownerShip.Player1) ? Player1UnitPrefab : Player2UnitPrefab;
 
             //Calculate the point at which the units should spawn (just outside the tower in the proper direction)
             Vector3 vecToTarget = targetPos - transform.position;                                 //line between source and target
@@ -363,27 +334,40 @@ namespace Global{
         //Display # of garrisoned units above the tower
         void OnGUI()
         {
-          Vector3 screenPos = sceneCam.WorldToScreenPoint(transform.position);
-                    switch (myOwner)
-                    {
-                        case (ownerShip.Neutral):
-                            GUI.contentColor = Color.grey;
-                GUI.Label(new Rect(screenPos.x - 9, sceneCam.pixelHeight - screenPos.y - 70, 50, 75),  units.ToString(),GUIneutral);
-                            break;
-                        case (ownerShip.Player1):
-                           // GUI.contentColor = Color.yellow;
-                GUI.Label(new Rect(screenPos.x - 9, sceneCam.pixelHeight - screenPos.y - 70, 50, 75),  units.ToString(),GUIplayer1);
-                            break;
-                        case (ownerShip.Player2):
-                          //  GUI.contentColor = Color.magenta;
-                GUI.Label(new Rect(screenPos.x - 9, sceneCam.pixelHeight - screenPos.y - 70, 50, 75),  units.ToString(),GUIplayer2);
-                            break;
+            Vector3 screenPos = sceneCam.WorldToScreenPoint(transform.position);
+            switch (myOwner)
+            {
+                case (ownerShip.Neutral):
+                    GUI.contentColor = Color.grey;
+                    GUI.Label(new Rect(screenPos.x - 9, sceneCam.pixelHeight - screenPos.y - 70, 50, 75),  units.ToString(),GUIneutral);
+                    break;
+                case (ownerShip.Player1):
+                    // GUI.contentColor = Color.yellow;
+                    GUI.Label(new Rect(screenPos.x - 9, sceneCam.pixelHeight - screenPos.y - 70, 50, 75),  units.ToString(),GUIplayer1);
+                    break;
+                case (ownerShip.Player2):
+                    //  GUI.contentColor = Color.magenta;
+                    GUI.Label(new Rect(screenPos.x - 9, sceneCam.pixelHeight - screenPos.y - 70, 50, 75),  units.ToString(),GUIplayer2);
+                    break;
+            }
+        }
 
-                    }
-                    //todo remove these magic numbers
+        public bool Visited
+        {
+            get{return _visited;}
+            set{_visited = value;}
+        }
 
-                    if ((Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) && Input.GetKey(KeyCode.K))
-                        SOCCERMODE = true;
+        public int Units
+        {
+            get { return units; }
+            set { units = value; }
+        }
+
+        public bool Selected
+        {
+            get { return selected; }
+            private set { selected = value; }
         }
     }
 }

@@ -79,7 +79,7 @@
                    
                 //make blue
                 if(ownerShip.Neutral == tower.Key.GetComponent<Tower>().myOwner || parentsOwner != tower.Key.GetComponent<Tower>().myOwner){
-                    Color32 DarkGrey = new Color32(139,139,139,66);
+                    Color32 DarkGrey = new Color32(139, 139, 139, 30); //Color32(139,139,139,66);
                     tower.Value.SetColors(DarkGrey,DarkGrey);
                 }
                 //make line grey

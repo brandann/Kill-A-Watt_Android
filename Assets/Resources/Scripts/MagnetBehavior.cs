@@ -103,7 +103,7 @@ namespace Global
 
             pointNum = 0;
             while( (Time.time < startTime + secondsToStick) ) {
-                if(t.units > 0 ){
+                if(t.Units > 0 ){
                     Quaternion rotation = Quaternion.LookRotation(t.gameObject.transform.position - points[pointNum % (numPoints - 1)], Vector3.forward);
                     rotation.x = 0;
                     rotation.y = 0;            

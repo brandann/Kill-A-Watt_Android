@@ -84,7 +84,7 @@ namespace Global{
 
         //---------------------------------------------------------------------------
         private void StartMenuState(){
-            GetComponent<Camera>().backgroundColor = Color.grey;
+            //GetComponent<Camera>().backgroundColor = Color.grey;
         }
 
         //---------------------------------------------------------------------------
@@ -142,7 +142,7 @@ namespace Global{
             else if(Input.GetKey(KeyCode.S))
                 wheelInput-= 1 * scrollSpeed;
             float newWhellPos = Mathf.Clamp(wheelInput, -scrollDistance, scrollDistance);
-            MainCamera.transform.position = new Vector3 (200, newWhellPos, -10);
+            //MainCamera.transform.position = new Vector3 (200, newWhellPos, -10);
         }
     }
 }

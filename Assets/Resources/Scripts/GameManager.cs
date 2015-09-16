@@ -108,10 +108,10 @@ namespace Global {
             foreach (var node in rootAdjacent) {
                 if (root.GetComponent<DeathRay>().myOwner == node.Key.GetComponent<Tower>().myOwner) {
                     TowerQ.Enqueue(node.Key);
-                    node.Key.GetComponent<Tower>().Visited = true;
+                    node.Key.GetComponent<Tower>()._visited = true;
                     if (root.GetComponent<DeathRay>().myOwner == ownerShip.Player1) {
                         //player1Score += 10; // this was the old version
-                        player1Score += node.Key.GetComponent<Tower>().units;
+                        player1Score += node.Key.GetComponent<Tower>().Units;
                         node.Key.GetComponent<Tower>().PlayPlusTen();
                     }
                 }
@@ -120,17 +120,17 @@ namespace Global {
             while (TowerQ.Count != 0) {
                 GameObject currentNode = TowerQ.Dequeue(); //remove the first element
                 ownerShip myOwner = currentNode.GetComponent<Tower>().myOwner; // get the owner of current
-                if (!currentNode.GetComponent<Tower>().Visited) {
+                if (!currentNode.GetComponent<Tower>()._visited) {
                     if (root.GetComponent<DeathRay>().myOwner == ownerShip.Player1) {
                         player1Score += 10;
                         currentNode.GetComponent<Tower>().PlayPlusTen();
                     }
-                    currentNode.GetComponent<Tower>().Visited = true;
+                    currentNode.GetComponent<Tower>()._visited = true;
                 }
                 Dictionary<GameObject, LineRenderer> adjacent = currentNode.GetComponentInChildren<Connection>().connections;
                 foreach (var node in adjacent) {
                     ownerShip childOwner = node.Key.GetComponent<Tower>().myOwner; // get the owner of the child node
-                    if (myOwner == childOwner && node.Key.GetComponent<Tower>().Visited == false) {
+                    if (myOwner == childOwner && node.Key.GetComponent<Tower>()._visited == false) {
                         TowerQ.Enqueue(node.Key);
                     }
                 }
@@ -177,7 +177,7 @@ namespace Global {
         //Called from individual towers to notify all of the same player's towers to attack a certain location
         public void AttackToward(Vector3 targetPosition, ownerShip attackingPlayer) {
             foreach (KeyValuePair<Vector3, Tower> entry in towerLookup) {
-                if (entry.Value.selected && entry.Value.myOwner == attackingPlayer)
+                if (entry.Value.Selected && entry.Value.myOwner == attackingPlayer)
                     StartCoroutine(entry.Value.SpawnAttack(targetPosition));
             }
             if(ClearSelectionAfterAttack)
@@ -190,7 +190,7 @@ namespace Global {
 
             foreach (KeyValuePair<Vector3, Tower> entry in towerLookup)
             {
-                if (entry.Value.selected && entry.Value.myOwner == playerToDeselect)
+                if (entry.Value.Selected && entry.Value.myOwner == playerToDeselect)
                 {
                     entry.Value.ToggleSelect();
                     entry.Value.updateSprite();
@@ -207,7 +207,7 @@ namespace Global {
             ownerShip playerToDeselect = (isPlayer1 == true) ? ownerShip.Player1 : ownerShip.Player2;
             foreach (KeyValuePair<Vector3, Tower> entry in towerLookup)
             {
-                if (!entry.Value.selected && entry.Value.myOwner == playerToDeselect)
+                if (!entry.Value.Selected && entry.Value.myOwner == playerToDeselect)
                 {
                     entry.Value.ToggleSelect();
                     entry.Value.updateSprite();
@@ -274,13 +274,13 @@ namespace Global {
               tScript.SwitchOwner(entry.Value);
               switch (entry.Value) {
                   case ownerShip.Neutral:
-                      tScript.units = NeutralStartingUnits;
+                      tScript.Units = NeutralStartingUnits;
                       break;
                   case ownerShip.Player1:
-                      tScript.units = Player1StartingUnits;
+                      tScript.Units = Player1StartingUnits;
                       break;
                   case ownerShip.Player2:
-                      tScript.units = Player2StartingUnits;
+                      tScript.Units = Player2StartingUnits;
                       break;
                   default:
                       Debug.LogError("Invalid Ownership type");
@@ -295,13 +295,13 @@ namespace Global {
                 tScript.SwitchOwner(entry.Value);
                 switch (entry.Value) {
                     case ownerShip.Neutral:
-                        tScript.units = NeutralStartingUnits * 3;
+                        tScript.Units = NeutralStartingUnits * 3;
                         break;
                     case ownerShip.Player1:
-                        tScript.units = Player1StartingUnits;
+                        tScript.Units = Player1StartingUnits;
                         break;
                     case ownerShip.Player2:
-                        tScript.units = Player2StartingUnits;
+                        tScript.Units = Player2StartingUnits;
                         break;
                     default:
                         Debug.LogError("Invalid Ownership type");

@@ -48,11 +48,11 @@ namespace Global{
                     foreach (Collider2D c in colliders) {
                         Tower t = c.GetComponent<Tower>();
                         if (t != null) {
-                            if (t.myOwner == ownerShip.Player1 && t.selected == false) {
+                            if (t.myOwner == ownerShip.Player1 && t.Selected == false) {
                                 t.ToggleSelect();
                                 t.updateSprite();
                             }
-                            else if (t.myOwner == ownerShip.Player2 && t.selected == false) {
+                            else if (t.myOwner == ownerShip.Player2 && t.Selected == false) {
                                 t.ToggleSelect();
                                 //t.updateSprite(); // dont update sprite for player 2 so player 1 does not know selected towers
                             }

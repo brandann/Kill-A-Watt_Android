@@ -81,10 +81,17 @@ namespace Global{
         }
 
         private void lightningSelf(){
-            if (parentsOwner == ownerShip.Player1) 
-                line.SetColors (Color.yellow, Color.white);
-            else if(parentsOwner == ownerShip.Player2)
-                line.SetColors (Color.blue, Color.white);
+            if (parentsOwner == ownerShip.Player1){
+                line.enabled = true;
+                line.SetColors(Color.yellow, Color.white);
+            }
+            else if (parentsOwner == ownerShip.Player2){
+                line.enabled = true;
+                line.SetColors(Color.blue, Color.white);
+            }
+            else if (parentsOwner == ownerShip.Neutral){
+                line.enabled = false;
+            }
                 
             Vector3 updatedVector = new Vector3(this.transform.position.x,this.transform.position.y + 1.5f, 0);
             line.SetPosition (0, updatedVector);
