@@ -149,6 +149,12 @@ namespace Global {
             {
                 SelectAll(true); // select all player1
             }
+            
+			//---------------------------------------
+			if (stateManager.status == WorldGameState.InGame)
+			{
+				calculateScore();
+			}
 
             //---------------------------------------
             if (!player2HasAllTowers && !player1HasAllTowers)
@@ -158,12 +164,6 @@ namespace Global {
             else
             {
                 winCondition();
-            }
-
-            //---------------------------------------
-            if (stateManager.status == WorldGameState.InGame)
-            {
-                calculateScore();
             }
                 
             //---------------------------------------
