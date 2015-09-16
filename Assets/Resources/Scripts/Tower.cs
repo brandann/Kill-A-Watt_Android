@@ -42,6 +42,9 @@ namespace Global{
 
         public GameObject SelectionGO;
         private SpriteRenderer Selection;
+
+        public GameObject UpgradeBtnObject;
+        private bool UpgradeActive = false;
         
         private int unitsToSend; //Units left to send from last attack
         public Quaternion destination;
@@ -97,29 +100,54 @@ namespace Global{
                     units++;
                 }
                 lastUnitGeneratedTime = Time.realtimeSinceStartup;
-            }            
+            }
+
+            if (!UpgradeActive && Units == MAXUNITS)
+            {
+                if (myOwner == ownerShip.Player1)
+                {
+                    UpgradeBtnObject.SetActive(true);
+                }
+                UpgradeActive = true;
+            }
+            else if (UpgradeActive && Units != MAXUNITS)
+            {
+                UpgradeBtnObject.SetActive(false);
+                UpgradeActive = false;
+            }
         }
         //--------------------------------------------------------------------------------------------------------------------------------------------------
 
         //Left mouse must go down and up on same collider to call this; used to toggle tower selection
         void OnMouseUpAsButton()
         {
-            if (magnetized)
-                return;
-
             if (myOwner == ownerShip.Player1)
             {
                 ToggleSelect();
-                updateSprite();
+            }
+            else
+            {
+                Manager.AttackToward(transform.position, ownerShip.Player1);
+            } 
+        }
+       
+        public void ToggleSelect()
+        {
+            // cannot select tower while magnetized
+            if (magnetized)
+            {
+                return;
             }
 
-        }
-        //-------------------------------------------------------------------------------------------------------------------------------------------------
+            // toggle the selection
+            selected = (selected == true) ? false : true;
 
-       
-        public void ToggleSelect(){
-            if (magnetized) return;
-            selected = (selected == true) ? false : true;           
+            // only update the sprite if the player is player 1
+            // player 2 and neutural do not show selections
+            if (myOwner == ownerShip.Player1)
+            {
+                updateSprite();
+            }
         }
         
         //-------------------------------------------------------------------------------------------------------------------------------------------------
@@ -156,39 +184,14 @@ namespace Global{
 
         public void updateSprite()
         {
-            switch (myOwner)
+            if (selected)
             {
-                case ownerShip.Neutral:
-                    myRender.sprite = neutralSprite;
-                    break;
-                case ownerShip.Player1:
-                    if(selected) {
-                        Selection.enabled = true;
-                        break;
-                    }
-                    Selection.enabled = false;
-                    break;
-                case ownerShip.Player2:
-                    myRender.sprite = player2Sprite;
-                    break;
-                default:
-                    Debug.LogError("Invalid ownership in updateSprite");
-                    break;
+                Selection.enabled = true;
+                return;
             }
+            Selection.enabled = false;
         }
-        //--------------------------------------------------------------------------------------------------------------------------------------------------
         #endregion
-		
-        void OnMouseOver()
-        {
-            //Only looking for Right clicks
-            //Maybe a point of optomization later on; currently this function is called every time the mouse passes over a tower
-            if (Input.GetMouseButtonDown(0) && (myOwner == ownerShip.Player2 || myOwner == ownerShip.Neutral))
-            {
-                Manager.AttackToward(transform.position, ownerShip.Player1);
-            } 
-        }
-        //--------------------------------------------------------------------------------------------------------------------------------------------------
 		
         #region attack
 		
@@ -236,11 +239,11 @@ namespace Global{
       
         void OnTriggerEnter2D(Collider2D other) 
         {
-
             if (null == other || other.gameObject.tag.Contains("Untagged"))
             {
                 return;
             }
+
             //Flip owner if hit by magnet ability
             if (other.gameObject.tag.Contains("Magnet"))
                 return;
@@ -268,10 +271,11 @@ namespace Global{
                     units = 0;
                 if (units == 0 && otherOwner != ownerShip.Neutral)  //Switch control when all units are lost
                     SwitchOwner(otherOwner);
+                other.gameObject.GetComponent<unitBehavior>().makeBurst();
             }
 
             if(other.gameObject.tag.Contains("Unit")){
-                other.gameObject.GetComponent<unitBehavior>().makeBurst();
+                
                 GameObject.Destroy(other.gameObject);
             }
         }
@@ -280,6 +284,8 @@ namespace Global{
         bool playsound = false;
         public void SwitchOwner(ownerShip switchTo)
         {
+            lastUnitGeneratedTime = Time.realtimeSinceStartup;
+
             //Selection can't carry over when tower switches owner
             selected = false;
 

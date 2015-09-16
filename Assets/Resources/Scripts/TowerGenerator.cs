@@ -5,7 +5,6 @@ namespace Global
 {
     public class TowerGenerator : Tower
     {
-
         // Use this for initialization
         void Awake()
         {
@@ -26,7 +25,7 @@ namespace Global
         // Update is called once per frame
         void Update()
         {
-
+            
         }
     }
 }

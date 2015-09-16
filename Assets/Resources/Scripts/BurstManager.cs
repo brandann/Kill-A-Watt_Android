@@ -8,7 +8,7 @@ public class BurstManager : MonoBehaviour {
 
     #region privateVar
     private float timeElapsed;
-    private float duration = 5;
+    private float duration = 3;
     #endregion
 
     // Use this for initialization
