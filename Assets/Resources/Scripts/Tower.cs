@@ -40,7 +40,9 @@ namespace Global{
         private float randIntervalNorm;
         private Sprite[] blinkSprites;
         private int blinkCount;
-		
+
+        public GameObject SelectionGO;
+        private SpriteRenderer Selection;
         
         private int unitsToSend; //Units left to send from last attack
         public Quaternion destination;
@@ -94,7 +96,10 @@ namespace Global{
                 blinkSprites[0] = player1Sprite;
                 blinkSprites[1] = player2Sprite;
                 blinkSprites[2] = ShockRogueSprite;
-            }				
+                
+            }
+            Selection = SelectionGO.GetComponent<SpriteRenderer>();
+            
         }
     
         //-----------------------------------------------------------------------------------------------------------------------------------------
@@ -174,12 +179,16 @@ namespace Global{
                     myRender.sprite = neutralSprite;
                     break;
                 case ownerShip.Player1:
+                    
+
                         if(selected)
                         {
-                            myRender.sprite = player1SelectdSprite;
+                            //myRender.sprite = player1SelectdSprite;
+                            Selection.enabled = true;
                             break;
                         }
-                        myRender.sprite = player1Sprite;
+                        //myRender.sprite = player1Sprite;
+                        Selection.enabled = false;
                     break;
                 case ownerShip.Player2:
                         myRender.sprite = player2Sprite;
