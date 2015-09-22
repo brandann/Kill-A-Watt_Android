@@ -5,9 +5,6 @@ namespace Global
 {
     public class TowerShock : Tower
     {
-
-        
-
         // Use this for initialization
         void Awake()
         {
@@ -22,6 +19,7 @@ namespace Global
             player1SelectdSprite = Resources.Load("Textures/Tower/ShockTowerYellowSelected", typeof(Sprite)) as Sprite;
             player2SelectdSprite = Resources.Load("Textures/Tower/ShockTowerBlueSelected", typeof(Sprite)) as Sprite;
             MAXUNITS = 25;
+
             base.Init();
         }
 
