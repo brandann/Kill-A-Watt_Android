@@ -92,7 +92,6 @@ namespace Global {
 
         #region GUIclick
         public void playGUI() {
-            Debug.Log ("playGUI");
             GetComponent<AudioSource>().PlayOneShot (clipGUI);
         }
         #endregion

@@ -261,7 +261,6 @@ namespace Global{
             }
             ownerShip otherOwner = other.gameObject.GetComponent<unitBehavior>().myOwner;
 
-            print("Tower hit by: " + otherOwner);
             if (myOwner == otherOwner && otherOwner != ownerShip.Neutral)                
                 units++;
             else

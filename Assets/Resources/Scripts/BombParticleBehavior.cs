@@ -30,7 +30,6 @@ namespace Global{
             myRender = (SpriteRenderer)GetComponent<Renderer>();
             transform.Rotate(new Vector3(0,0,Random.Range(0,360)));
             int randomNumber = Random.Range (1, 4);
-            print ("BOMB RANDOM NUMBER: " + randomNumber);
             if (randomNumber < 3)  {
                 setSprite(randomNumber);
             }

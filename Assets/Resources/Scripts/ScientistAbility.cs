@@ -150,7 +150,6 @@ namespace Global {
 
         // does ability
         public void ability1() {
-            print ("ability1");
             // reset the abiltyManabger if the user right clicks
             if (Input.GetMouseButton (1)) {
                 currentAbility = ability.none;

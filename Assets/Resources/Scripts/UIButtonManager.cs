@@ -26,7 +26,6 @@ namespace Global
 
         public void OnStartPlayButtonPress()
         {
-            Debug.Log("Play Button Pressed");
             audioManager.playGUI();
             Application.LoadLevel("Game");
         }
