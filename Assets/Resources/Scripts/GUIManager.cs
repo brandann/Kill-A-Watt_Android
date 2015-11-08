@@ -322,9 +322,9 @@ namespace Global{
                 if (GUI.Button (Ability0, "", ShieldButton)|| Input.GetKey("1")) {
                     audioManager.playGUI();
                     if (gameManager.player1Score == totalScore) {
-                        scientistAbility.setAbility0 (ownerShip.Player1);
+                        scientistAbility.setAbility0 (ePlayer.Player1);
                     } else if (gameManager.player2Score == totalScore) {
-                        scientistAbility.setAbility0 (ownerShip.Player2);
+                        scientistAbility.setAbility0 (ePlayer.Player2);
                     }
                 }
             }
@@ -341,9 +341,9 @@ namespace Global{
               if (GUI.Button (Ability1, "", BombButton) || Input.GetKey("2")) {
                   audioManager.playGUI();
                   if (gameManager.player1Score == totalScore) {
-                      scientistAbility.setAbility1 (ownerShip.Player1);
+                      scientistAbility.setAbility1 (ePlayer.Player1);
                   } else if (gameManager.player2Score == totalScore) {
-                      scientistAbility.setAbility1 (ownerShip.Player2);
+                      scientistAbility.setAbility1 (ePlayer.Player2);
                   }
               }
           }
@@ -358,10 +358,10 @@ namespace Global{
               if (GUI.Button(Ability2, "",MagnetButton)|| Input.GetKey("3")) {
                   audioManager.playGUI();
                   if (gameManager.player1Score == totalScore) {
-                      scientistAbility.setAbility2(ownerShip.Player1);
+                      scientistAbility.setAbility2(ePlayer.Player1);
                   }
                   else if (gameManager.player2Score == totalScore) {
-                      scientistAbility.setAbility2(ownerShip.Player2);
+                      scientistAbility.setAbility2(ePlayer.Player2);
                   }
               }
               }

@@ -5,7 +5,7 @@ namespace Global{
 
     public class DeathRay : MonoBehaviour {
 
-        public ownerShip myOwner;
+        public ePlayer myOwner;
         public Transform rayGunSprite;
         Camera cam;
         ScientistAbility science;
@@ -17,7 +17,7 @@ namespace Global{
         void Start () {
             cam = GameObject.FindGameObjectWithTag ("MainCamera").GetComponent<Camera>();
             science = cam.GetComponent<ScientistAbility> ();
-            if (myOwner == ownerShip.Player1)
+            if (myOwner == ePlayer.Player1)
               rayGunSprite = transform.FindChild ("DeathRayYellowGun");
             else
               rayGunSprite = transform.FindChild ("DeathRayBlueGun");
@@ -26,9 +26,9 @@ namespace Global{
         // Add stuff to deathray later
         void Update () {
             Vector3 mousePos = Camera.main.ScreenToWorldPoint (Input.mousePosition);
-            if (science.currentAbility != ScientistAbility.ability.none && myOwner == ownerShip.Player1)
+            if (science.currentAbility != ScientistAbility.ability.none && myOwner == ePlayer.Player1)
               rotateWeapon (mousePos);
-            if(science.currentAbility != ScientistAbility.ability.none && myOwner == ownerShip.Player2)
+            if(science.currentAbility != ScientistAbility.ability.none && myOwner == ePlayer.Player2)
                 rotateWeapon(mousePos);
         }
       

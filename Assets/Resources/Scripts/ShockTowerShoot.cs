@@ -10,7 +10,7 @@ namespace Global{
         private float fequency = .75f; // seconds a minion is killed
         private LineRenderer line;
         private bool Collided;
-        public ownerShip parentsOwner;
+        public ePlayer parentsOwner;
         private float towerRange;
         private GameObject current;
         AudioManager audioManager;
@@ -29,11 +29,11 @@ namespace Global{
         }
 
         private void getMinions(){
-            if (parentsOwner == ownerShip.Player1) {
+            if (parentsOwner == ePlayer.Player1) {
                 GameObject[] P2Array = GameObject.FindGameObjectsWithTag ("Player2Unit");
                 destroyMinions(P2Array);
             }
-            if (parentsOwner == ownerShip.Player2) {
+            if (parentsOwner == ePlayer.Player2) {
                 GameObject[] P1Array = GameObject.FindGameObjectsWithTag ("Player1Unit");
                 destroyMinions(P1Array);
             }
@@ -65,9 +65,9 @@ namespace Global{
         }
 
         private void lightning(Transform minion){
-            if (parentsOwner == ownerShip.Player1) 
+            if (parentsOwner == ePlayer.Player1) 
                 line.SetColors (Color.yellow, Color.white);
-            else if(parentsOwner == ownerShip.Player2)
+            else if(parentsOwner == ePlayer.Player2)
                 line.SetColors (Color.blue, Color.white);
                 
             line.SetPosition (0, this.transform.localPosition);
@@ -81,15 +81,15 @@ namespace Global{
         }
 
         private void lightningSelf(){
-            if (parentsOwner == ownerShip.Player1){
+            if (parentsOwner == ePlayer.Player1){
                 line.enabled = true;
                 line.SetColors(Color.yellow, Color.white);
             }
-            else if (parentsOwner == ownerShip.Player2){
+            else if (parentsOwner == ePlayer.Player2){
                 line.enabled = true;
                 line.SetColors(Color.blue, Color.white);
             }
-            else if (parentsOwner == ownerShip.Neutral){
+            else if (parentsOwner == ePlayer.Neutral){
                 line.enabled = false;
             }
                 

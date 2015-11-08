@@ -2,16 +2,17 @@
 using System.Collections;
 using System.Collections.Generic;
 namespace Global {
-    public enum ownerShip { Neutral, Player1, Player2 };
+    public enum ePlayer { Neutral, Player1, Player2 };
+    public enum eTowerType { Neutral, Generator, Shock };
     
     public class GameManager : MonoBehaviour
     {
         #region LevelLayoutVariables
         
         //location and type of towermarkers placed on the scene in the heiarchy
-        private Dictionary<Vector3, ownerShip> mappedTowers = new Dictionary<Vector3, ownerShip>();
-        private Dictionary<Vector3, ownerShip> mappedShocks = new Dictionary<Vector3, ownerShip>();
-        private Dictionary<Vector3, ownerShip> mappedRoots = new Dictionary<Vector3, ownerShip>();
+        private Dictionary<Vector3, ePlayer> mappedTowers = new Dictionary<Vector3, ePlayer>();
+        private Dictionary<Vector3, ePlayer> mappedShocks = new Dictionary<Vector3, ePlayer>();
+        private Dictionary<Vector3, ePlayer> mappedRoots = new Dictionary<Vector3, ePlayer>();
         
         //List of actuall ingame towers and their positions
         public Dictionary<Vector3, Tower> towerLookup = new Dictionary<Vector3, Tower>();
@@ -62,9 +63,9 @@ namespace Global {
             int player2Count = 0;
             foreach (var tower in towerLookup) {
 
-                if(tower.Value.myOwner == ownerShip.Player1)
+                if(tower.Value.myOwner == ePlayer.Player1)
                     player1Count++;
-                else if(tower.Value.myOwner == ownerShip.Player2)
+                else if(tower.Value.myOwner == ePlayer.Player2)
                     player2Count++;
             }
             if (player1Count == 0 ) {
@@ -109,7 +110,7 @@ namespace Global {
                 if (root.GetComponent<DeathRay>().myOwner == node.Key.GetComponent<Tower>().myOwner) {
                     TowerQ.Enqueue(node.Key);
                     node.Key.GetComponent<Tower>()._visited = true;
-                    if (root.GetComponent<DeathRay>().myOwner == ownerShip.Player1) {
+                    if (root.GetComponent<DeathRay>().myOwner == ePlayer.Player1) {
                         //player1Score += 10; // this was the old version
                         player1Score += node.Key.GetComponent<Tower>().Units;
                         node.Key.GetComponent<Tower>().PlayPlusTen();
@@ -119,9 +120,9 @@ namespace Global {
 
             while (TowerQ.Count != 0) {
                 GameObject currentNode = TowerQ.Dequeue(); //remove the first element
-                ownerShip myOwner = currentNode.GetComponent<Tower>().myOwner; // get the owner of current
+                ePlayer myOwner = currentNode.GetComponent<Tower>().myOwner; // get the owner of current
                 if (!currentNode.GetComponent<Tower>()._visited) {
-                    if (root.GetComponent<DeathRay>().myOwner == ownerShip.Player1) {
+                    if (root.GetComponent<DeathRay>().myOwner == ePlayer.Player1) {
                         player1Score += 10;
                         currentNode.GetComponent<Tower>().PlayPlusTen();
                     }
@@ -129,7 +130,7 @@ namespace Global {
                 }
                 Dictionary<GameObject, LineRenderer> adjacent = currentNode.GetComponentInChildren<Connection>().connections;
                 foreach (var node in adjacent) {
-                    ownerShip childOwner = node.Key.GetComponent<Tower>().myOwner; // get the owner of the child node
+                    ePlayer childOwner = node.Key.GetComponent<Tower>().myOwner; // get the owner of the child node
                     if (myOwner == childOwner && node.Key.GetComponent<Tower>()._visited == false) {
                         TowerQ.Enqueue(node.Key);
                     }
@@ -175,18 +176,18 @@ namespace Global {
         }
 
         //Called from individual towers to notify all of the same player's towers to attack a certain location
-        public void AttackToward(Vector3 targetPosition, ownerShip attackingPlayer) {
+        public void AttackToward(Vector3 targetPosition, ePlayer attackingPlayer) {
             foreach (KeyValuePair<Vector3, Tower> entry in towerLookup) {
                 if (entry.Value.Selected && entry.Value.myOwner == attackingPlayer)
                     StartCoroutine(entry.Value.SpawnAttack(targetPosition));
             }
             if(ClearSelectionAfterAttack)
-                DeselectTowers(attackingPlayer == ownerShip.Player1);
+                DeselectTowers(attackingPlayer == ePlayer.Player1);
         }
 
         public void DeselectTowers(bool isPlayer1) {
             
-            ownerShip playerToDeselect = (isPlayer1 == true) ? ownerShip.Player1 : ownerShip.Player2;
+            ePlayer playerToDeselect = (isPlayer1 == true) ? ePlayer.Player1 : ePlayer.Player2;
 
             foreach (KeyValuePair<Vector3, Tower> entry in towerLookup)
             {
@@ -204,7 +205,7 @@ namespace Global {
 
         //Called from individual towers to notify all of the same player's towers to deselect a certain location
         public void SelectAll(bool isPlayer1) {
-            ownerShip playerToDeselect = (isPlayer1 == true) ? ownerShip.Player1 : ownerShip.Player2;
+            ePlayer playerToDeselect = (isPlayer1 == true) ? ePlayer.Player1 : ePlayer.Player2;
             foreach (KeyValuePair<Vector3, Tower> entry in towerLookup)
             {
                 if (!entry.Value.Selected && entry.Value.myOwner == playerToDeselect)
@@ -222,22 +223,22 @@ namespace Global {
             foreach (GameObject tm in towerMarkers) {
                 switch (tm.name) {
                     case "towerMarkerNeutral":
-                        mappedTowers.Add(tm.transform.position, ownerShip.Neutral);
+                        mappedTowers.Add(tm.transform.position, ePlayer.Neutral);
                         break;
                     case "towerMarkerPlayer1":
-                        mappedTowers.Add(tm.transform.position, ownerShip.Player1);
+                        mappedTowers.Add(tm.transform.position, ePlayer.Player1);
                         break;
                     case "towerMarkerPlayer2":
-                        mappedTowers.Add(tm.transform.position, ownerShip.Player2);
+                        mappedTowers.Add(tm.transform.position, ePlayer.Player2);
                         break;
                     case "shockMarkerPlayer1":
-                        mappedShocks.Add(tm.transform.position, ownerShip.Player1);
+                        mappedShocks.Add(tm.transform.position, ePlayer.Player1);
                         break;
                     case "shockMarkerPlayer2":
-                        mappedShocks.Add(tm.transform.position, ownerShip.Player2);
+                        mappedShocks.Add(tm.transform.position, ePlayer.Player2);
                         break;
                     case "shockMarkerPlayerNeutral":
-                        mappedShocks.Add(tm.transform.position, ownerShip.Neutral);
+                        mappedShocks.Add(tm.transform.position, ePlayer.Neutral);
                         break;
                     default:
                         Debug.LogError("Invalid towerMarker type in buildTowerLocations");
@@ -250,17 +251,17 @@ namespace Global {
             foreach (GameObject rm in rootMarkers)
             {
                 if (rm.name == "RootMarkerPlayer1")
-                    mappedRoots.Add(rm.transform.position, ownerShip.Player1);
+                    mappedRoots.Add(rm.transform.position, ePlayer.Player1);
                 else
-                    mappedRoots.Add(rm.transform.position, ownerShip.Player2);
+                    mappedRoots.Add(rm.transform.position, ePlayer.Player2);
                 Destroy(rm);
             }
         }
 
         //Instanciates the towers in all the locations specified by BuildTowerLocations()
         public void SpawnTowers() {   
-            foreach (KeyValuePair<Vector3, ownerShip> r in mappedRoots) {
-                if(r.Value == ownerShip.Player1){
+            foreach (KeyValuePair<Vector3, ePlayer> r in mappedRoots) {
+                if(r.Value == ePlayer.Player1){
                     GameObject aRoot = (GameObject)GameObject.Instantiate(root1Prefab, r.Key, Quaternion.Euler(0, 0, 0));
                 }
                 else{
@@ -268,18 +269,18 @@ namespace Global {
                 }
             }
 
-            foreach (KeyValuePair<Vector3, ownerShip> entry in mappedTowers) {
+            foreach (KeyValuePair<Vector3, ePlayer> entry in mappedTowers) {
                 GameObject aTower = (GameObject)GameObject.Instantiate(towerPrefab, entry.Key, Quaternion.Euler(0, 0, 0));
               Tower tScript = aTower.GetComponent<Tower>();
               tScript.SwitchOwner(entry.Value);
               switch (entry.Value) {
-                  case ownerShip.Neutral:
+                  case ePlayer.Neutral:
                       tScript.Units = NeutralStartingUnits;
                       break;
-                  case ownerShip.Player1:
+                  case ePlayer.Player1:
                       tScript.Units = Player1StartingUnits;
                       break;
-                  case ownerShip.Player2:
+                  case ePlayer.Player2:
                       tScript.Units = Player2StartingUnits;
                       break;
                   default:
@@ -289,18 +290,18 @@ namespace Global {
               towerLookup.Add(entry.Key, aTower.GetComponent<Tower>());
             }
             
-            foreach (KeyValuePair<Vector3, ownerShip> entry in mappedShocks) {
+            foreach (KeyValuePair<Vector3, ePlayer> entry in mappedShocks) {
                 GameObject aTower = (GameObject)GameObject.Instantiate(shockPrefab, entry.Key, Quaternion.Euler(0, 0, 0));
                 Tower tScript = aTower.GetComponent<Tower>();
                 tScript.SwitchOwner(entry.Value);
                 switch (entry.Value) {
-                    case ownerShip.Neutral:
+                    case ePlayer.Neutral:
                         tScript.Units = NeutralStartingUnits * 3;
                         break;
-                    case ownerShip.Player1:
+                    case ePlayer.Player1:
                         tScript.Units = Player1StartingUnits;
                         break;
-                    case ownerShip.Player2:
+                    case ePlayer.Player2:
                         tScript.Units = Player2StartingUnits;
                         break;
                     default:

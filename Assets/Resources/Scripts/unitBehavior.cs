@@ -12,7 +12,7 @@ namespace Global
         public Vector3 destination = new Vector3(0,0,0);
         public float speed;
         LineRenderer line;
-        public ownerShip myOwner;
+        public ePlayer myOwner;
         private float spawnedTime = 0;
         private float timeToLive = 15;
         
@@ -67,7 +67,7 @@ namespace Global
             }       
         }
 
-        private void makeBomb(ownerShip owner) {
+        private void makeBomb(ePlayer owner) {
             //recursion
             GameObject e = GameObject.Instantiate(bombManagerPrefab, this.transform.position, Quaternion.LookRotation(Vector3.forward, Vector3.forward)) as GameObject;
             BombManager BM = e.GetComponent<BombManager>();

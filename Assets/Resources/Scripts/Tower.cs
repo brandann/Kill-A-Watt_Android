@@ -12,7 +12,7 @@ namespace Global{
 
         #region Tower Properties
         public bool _visited;
-        public ownerShip myOwner; //Player this tower belongs go
+        public ePlayer myOwner; //Player this tower belongs go
         private int units; //Number of garrisoned units should be set at runtime
         private bool selected = false;
         public GUIStyle GUIplayer1;
@@ -95,7 +95,7 @@ namespace Global{
             //Increment garrisoned units on a constant interval
             if ((Time.realtimeSinceStartup - lastUnitGeneratedTime) > unitIncrementRate)
             {   
-                if(myOwner != ownerShip.Neutral){
+                if(myOwner != ePlayer.Neutral){
                     if(units < MAXUNITS)
                     units++;
                 }
@@ -104,7 +104,7 @@ namespace Global{
 
             if (!UpgradeActive && Units >= MAXUNITS)
             {
-                if (myOwner == ownerShip.Player1)
+                if (myOwner == ePlayer.Player1)
                 {
                     UpgradeBtnObject.SetActive(true);
                 }
@@ -121,13 +121,13 @@ namespace Global{
         //Left mouse must go down and up on same collider to call this; used to toggle tower selection
         void OnMouseUpAsButton()
         {
-            if (myOwner == ownerShip.Player1)
+            if (myOwner == ePlayer.Player1)
             {
                 ToggleSelect();
             }
             else
             {
-                Manager.AttackToward(transform.position, ownerShip.Player1);
+                Manager.AttackToward(transform.position, ePlayer.Player1);
             } 
         }
        
@@ -144,7 +144,7 @@ namespace Global{
 
             // only update the sprite if the player is player 1
             // player 2 and neutural do not show selections
-            if (myOwner == ownerShip.Player1)
+            if (myOwner == ePlayer.Player1)
             {
                 updateSprite();
             }
@@ -208,7 +208,7 @@ namespace Global{
 
             GameObject prefabToSpawn;
             //Select the proper unit prefab to spawn
-            prefabToSpawn = (myOwner == ownerShip.Player1) ? Player1UnitPrefab : Player2UnitPrefab;
+            prefabToSpawn = (myOwner == ePlayer.Player1) ? Player1UnitPrefab : Player2UnitPrefab;
 
             //Calculate the point at which the units should spawn (just outside the tower in the proper direction)
             Vector3 vecToTarget = targetPos - transform.position;                                 //line between source and target
@@ -220,7 +220,7 @@ namespace Global{
 
             int unitsToSend = (int)(units * percentOfUnitsPerAttack);                            //Calculate the number of units to spawn
             
-            ownerShip myOwnerWhenStarted = myOwner;                                              //Ownership could change while SpawnAttack is sleeping           
+            ePlayer myOwnerWhenStarted = myOwner;                                              //Ownership could change while SpawnAttack is sleeping           
            
             //Keep sending till all units are sent or the tower runs out of units or switches sides
             while (unitsToSend > 0 && units > unitsToSend && myOwner == myOwnerWhenStarted)
@@ -259,16 +259,16 @@ namespace Global{
                 if (distance.magnitude > 2)
                     return;
             }
-            ownerShip otherOwner = other.gameObject.GetComponent<unitBehavior>().myOwner;
+            ePlayer otherOwner = other.gameObject.GetComponent<unitBehavior>().myOwner;
 
-            if (myOwner == otherOwner && otherOwner != ownerShip.Neutral)                
+            if (myOwner == otherOwner && otherOwner != ePlayer.Neutral)                
                 units++;
             else
             {
                 units -= attackedDamage;
                 if (units < 0)  //Can happen when multiple units hit at same time; might watnt to use math.clamp
                     units = 0;
-                if (units == 0 && otherOwner != ownerShip.Neutral)  //Switch control when all units are lost
+                if (units == 0 && otherOwner != ePlayer.Neutral)  //Switch control when all units are lost
                     SwitchOwner(otherOwner);
                 other.gameObject.GetComponent<unitBehavior>().makeBurst();
             }
@@ -281,7 +281,7 @@ namespace Global{
         
         //----------------------------------------------------------------------------------------------------------------------------------------------
         bool playsound = false;
-        public void SwitchOwner(ownerShip switchTo)
+        public void SwitchOwner(ePlayer switchTo)
         {
             lastUnitGeneratedTime = Time.realtimeSinceStartup;
 
@@ -291,15 +291,15 @@ namespace Global{
             myOwner = switchTo;
             switch (switchTo)
             {
-            case ownerShip.Neutral:
+            case ePlayer.Neutral:
                 myRender.sprite = neutralSprite;
                 break;
-            case ownerShip.Player1:
+            case ePlayer.Player1:
                 if(playsound) 
                     audioManager.playTowerTakeover1();
                 myRender.sprite = player1Sprite;
                 break;
-            case ownerShip.Player2:
+            case ePlayer.Player2:
                 if(playsound) 
                     audioManager.playTowerTakeover2();
                 myRender.sprite = player2Sprite;
@@ -342,15 +342,15 @@ namespace Global{
             Vector3 screenPos = sceneCam.WorldToScreenPoint(transform.position);
             switch (myOwner)
             {
-                case (ownerShip.Neutral):
+                case (ePlayer.Neutral):
                     GUI.contentColor = Color.grey;
                     GUI.Label(new Rect(screenPos.x - 9, sceneCam.pixelHeight - screenPos.y - 70, 50, 75),  units.ToString(),GUIneutral);
                     break;
-                case (ownerShip.Player1):
+                case (ePlayer.Player1):
                     // GUI.contentColor = Color.yellow;
                     GUI.Label(new Rect(screenPos.x - 9, sceneCam.pixelHeight - screenPos.y - 70, 50, 75),  units.ToString(),GUIplayer1);
                     break;
-                case (ownerShip.Player2):
+                case (ePlayer.Player2):
                     //  GUI.contentColor = Color.magenta;
                     GUI.Label(new Rect(screenPos.x - 9, sceneCam.pixelHeight - screenPos.y - 70, 50, 75),  units.ToString(),GUIplayer2);
                     break;

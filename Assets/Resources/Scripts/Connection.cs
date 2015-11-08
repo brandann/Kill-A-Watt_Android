@@ -9,7 +9,7 @@
         public GameObject connectionPrefab; //set by inspector
         public Dictionary<GameObject,LineRenderer> connections = new Dictionary<GameObject,LineRenderer>();
         private double connectionDistance = 12; // change in inspector
-        private ownerShip parentsOwner;
+        private ePlayer parentsOwner;
         
         void Start () {
             if(this.transform.parent.gameObject.name == "tower(Clone)")
@@ -66,19 +66,19 @@
 
         private void updateConnectionColors(){
             foreach (var tower in connections) {
-                if(parentsOwner == tower.Key.GetComponent<Tower>().myOwner && parentsOwner == ownerShip.Player1){
+                if(parentsOwner == tower.Key.GetComponent<Tower>().myOwner && parentsOwner == ePlayer.Player1){
                     Color32 DarkYellow = new Color32(152,142,24,200);
                     tower.Value.SetColors(DarkYellow,DarkYellow);
                 }
               
                 //make red
-                if(parentsOwner == tower.Key.GetComponent<Tower>().myOwner && parentsOwner == ownerShip.Player2){
+                if(parentsOwner == tower.Key.GetComponent<Tower>().myOwner && parentsOwner == ePlayer.Player2){
                     Color32 DarkBlue = new Color32(22,74,144,200);
                     tower.Value.SetColors(DarkBlue,DarkBlue);
                 }
                    
                 //make blue
-                if(ownerShip.Neutral == tower.Key.GetComponent<Tower>().myOwner || parentsOwner != tower.Key.GetComponent<Tower>().myOwner){
+                if(ePlayer.Neutral == tower.Key.GetComponent<Tower>().myOwner || parentsOwner != tower.Key.GetComponent<Tower>().myOwner){
                     Color32 DarkGrey = new Color32(139, 139, 139, 30); //Color32(139,139,139,66);
                     tower.Value.SetColors(DarkGrey,DarkGrey);
                 }

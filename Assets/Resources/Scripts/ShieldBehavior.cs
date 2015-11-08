@@ -55,11 +55,11 @@ namespace Global{
         }
 		
         private void getMinions(){
-            if (deathRay.myOwner == ownerShip.Player1) {
+            if (deathRay.myOwner == ePlayer.Player1) {
                 GameObject[] P2Array = GameObject.FindGameObjectsWithTag ("Player2Unit");
                 destroyMinions(P2Array);
             }
-            if (deathRay.myOwner == ownerShip.Player2) {
+            if (deathRay.myOwner == ePlayer.Player2) {
                 GameObject[] P1Array = GameObject.FindGameObjectsWithTag ("Player1Unit");
                 destroyMinions(P1Array);
             }

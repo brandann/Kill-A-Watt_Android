@@ -34,7 +34,7 @@ namespace Global {
         Vector3 throwMagFrom;
         const float magTorque = 1500f;
         const float magForce = 20;
-        ownerShip magThrower;
+        ePlayer magThrower;
         #endregion
         
         // Use this for initialization
@@ -93,9 +93,9 @@ namespace Global {
         #region Ability0
         Camera cam;
         private bool overMyTower;
-        private ownerShip shieldOwner;
+        private ePlayer shieldOwner;
         
-        public void setAbility0(ownerShip owner) {
+        public void setAbility0(ePlayer owner) {
             currentAbility = ability.ability0;
             shieldOwner = owner;
         }
@@ -118,13 +118,13 @@ namespace Global {
             }
             if (Input.GetMouseButton (0)) {
                 if (tower != null) {
-                    if (shieldOwner == ownerShip.Player1 && tower.myOwner == ownerShip.Player1) {
+                    if (shieldOwner == ePlayer.Player1 && tower.myOwner == ePlayer.Player1) {
                         GameObject one = (GameObject) Instantiate (shieldP1, tower.transform.position, Quaternion.Euler (0, 0, 0));
                         currentAbility = ability.none;
                         gameManager.resetScore ();
                         tower = null;
                         overMyTower = false;
-                    } else if (shieldOwner == ownerShip.Player2 && tower.myOwner == ownerShip.Player2) {
+                    } else if (shieldOwner == ePlayer.Player2 && tower.myOwner == ePlayer.Player2) {
                         GameObject two = (GameObject) Instantiate (shieldP2, tower.transform.position, Quaternion.Euler (0, 0, 0));
                         currentAbility = ability.none;
                         gameManager.resetScore ();
@@ -138,10 +138,10 @@ namespace Global {
         #endregion
 
         #region Ability1
-        private ownerShip bombOwner;
+        private ePlayer bombOwner;
 
         // sets ability
-        public void setAbility1(ownerShip owner) {
+        public void setAbility1(ePlayer owner) {
             if (currentAbility == ability.none) {
                 bombOwner = owner;
                 currentAbility = ability.ability1;
@@ -172,7 +172,7 @@ namespace Global {
         #region Ability3
 
         private bool overEnemyTower;
-        public void setAbility2(ownerShip thrower)
+        public void setAbility2(ePlayer thrower)
         {
             //Cant initialize on start as towers aren't placed until game begins 
             if (p1DeathRay == null || p2DeathRay == null)
@@ -182,7 +182,7 @@ namespace Global {
             }          
             active = true;
             currentAbility = ability.ability2;
-            throwMagFrom = (thrower == ownerShip.Player1) ? p1DeathRay.transform.position : p2DeathRay.transform.position;
+            throwMagFrom = (thrower == ePlayer.Player1) ? p1DeathRay.transform.position : p2DeathRay.transform.position;
             clickTime = Time.time;
             magThrower = thrower;            //Used for the ability2()
         }
@@ -202,7 +202,7 @@ namespace Global {
             RaycastHit2D hitTower = Physics2D.Raycast(mousePos,Vector2.zero);
             if (hitTower.collider != null) {
                 tower = hitTower.collider.gameObject.GetComponent<Tower> ();
-                if(tower != null && magThrower != tower.myOwner && tower.myOwner != ownerShip.Neutral)
+                if(tower != null && magThrower != tower.myOwner && tower.myOwner != ePlayer.Neutral)
                     overEnemyTower = true;
             }
             //end redundant code ------------------------------------
@@ -214,7 +214,7 @@ namespace Global {
                 Tower thingClicked = hit.collider.gameObject.GetComponent<Tower>();
                 if (thingClicked == null)
                     return;
-                if (thingClicked.myOwner == ownerShip.Neutral || thingClicked.myOwner == magThrower)
+                if (thingClicked.myOwner == ePlayer.Neutral || thingClicked.myOwner == magThrower)
                     return;
                     GameObject mag = (GameObject) Instantiate(magnetPrefab, throwMagFrom, Quaternion.Euler(0, 0, 0));
                     Vector2 toMouse = (Camera.main.ScreenToWorldPoint(Input.mousePosition) - throwMagFrom) * magForce;

@@ -11,7 +11,7 @@ namespace Global{
         private float count = 15;
         private float cooldown = 0;
         private bool started = false;
-        public ownerShip myOwner = ownerShip.Neutral;
+        public ePlayer myOwner = ePlayer.Neutral;
 
         // Use this for initialization
         void Start () {
@@ -39,14 +39,14 @@ namespace Global{
         private void makeBombPoint() {
             //instantiate and deploy particle
             GameObject e = null;
-            if (myOwner == ownerShip.Player1) {
+            if (myOwner == ePlayer.Player1) {
                 e = GameObject.Instantiate (bombPrefab1, this.transform.position, Quaternion.LookRotation (Vector3.forward, Vector3.forward)) as GameObject;
-            } else if(myOwner == ownerShip.Player2) {
+            } else if(myOwner == ePlayer.Player2) {
                 e = GameObject.Instantiate (bombPrefab2, this.transform.position, Quaternion.LookRotation (Vector3.forward, Vector3.forward)) as GameObject;
             }
         }
 
-        public void changeOwner(ownerShip owner) {
+        public void changeOwner(ePlayer owner) {
             myOwner = owner;
             startBomb();
         }

@@ -13,7 +13,7 @@ namespace Global{
         private int startmax = 20;
         #endregion
 
-        public ownerShip myOwner;
+        public ePlayer myOwner;
 
         #region spriteStuff
         private SpriteRenderer myRender;
@@ -69,7 +69,7 @@ namespace Global{
           string makeSprite = "";
           Sprite currentSprite = null;
 
-          if (myOwner == ownerShip.Player1) {
+          if (myOwner == ePlayer.Player1) {
               switch (randomNumber) {
               case(1):
                   currentSprite = Resources.Load("Textures/Bomb/bomby1",typeof(Sprite)) as Sprite;
