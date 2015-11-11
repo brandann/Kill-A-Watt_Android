@@ -8,6 +8,6 @@ namespace Global{
         public int mUnits;
         public ePlayer mPlayer;
         public Vector3 mPosition;
-        //public eTowerType mTowerType;
+        public bool mVisited;
     }
 }
