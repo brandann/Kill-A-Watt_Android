@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
+
 namespace Global {
     public enum ePlayer { Neutral, Player1, Player2 };
     public enum eTowerType { Neutral, Generator, Shock };
@@ -16,6 +18,8 @@ namespace Global {
         
         //List of actuall ingame towers and their positions
         public Dictionary<Vector3, Tower> towerLookup = new Dictionary<Vector3, Tower>();
+
+        public List<Tower>[] _towersByPlayer = new List<Tower>[Enum.GetNames(typeof(ePlayer)).Length];
         
         //Default unit count for each of the 3 factions        
         private int NeutralStartingUnits = 5;
@@ -259,7 +263,15 @@ namespace Global {
         }
 
         //Instanciates the towers in all the locations specified by BuildTowerLocations()
-        public void SpawnTowers() {   
+        public void SpawnTowers()
+        {
+            //Initialize _towersByPlayers
+            for (int i = 0; i < _towersByPlayer.Length; ++i)
+            {
+                _towersByPlayer[i] = new List<Tower>();
+            }
+            
+               
             foreach (KeyValuePair<Vector3, ePlayer> r in mappedRoots) {
                 if(r.Value == ePlayer.Player1){
                     GameObject aRoot = (GameObject)GameObject.Instantiate(root1Prefab, r.Key, Quaternion.Euler(0, 0, 0));
@@ -269,27 +281,35 @@ namespace Global {
                 }
             }
 
-            foreach (KeyValuePair<Vector3, ePlayer> entry in mappedTowers) {
+            foreach (KeyValuePair<Vector3, ePlayer> entry in mappedTowers)
+            {
+
                 GameObject aTower = (GameObject)GameObject.Instantiate(towerPrefab, entry.Key, Quaternion.Euler(0, 0, 0));
-              Tower tScript = aTower.GetComponent<Tower>();
-              tScript.SwitchOwner(entry.Value);
-              switch (entry.Value) {
-                  case ePlayer.Neutral:
-                      tScript.Units = NeutralStartingUnits;
-                      break;
-                  case ePlayer.Player1:
-                      tScript.Units = Player1StartingUnits;
-                      break;
-                  case ePlayer.Player2:
-                      tScript.Units = Player2StartingUnits;
-                      break;
-                  default:
-                      Debug.LogError("Invalid Ownership type");
-                      break;
-              }
-              towerLookup.Add(entry.Key, aTower.GetComponent<Tower>());
+                Tower tScript = aTower.GetComponent<Tower>();
+                tScript.SwitchOwner(entry.Value);
+                switch (entry.Value)
+                {
+                    case ePlayer.Neutral:
+                        tScript.Units = NeutralStartingUnits;
+                        break;
+                    case ePlayer.Player1:
+                        tScript.Units = Player1StartingUnits;
+                        break;
+                    case ePlayer.Player2:
+                        tScript.Units = Player2StartingUnits;
+                        break;
+                    default:
+                        Debug.LogError("Invalid Ownership type");
+                        break;
+                }
+                towerLookup.Add(entry.Key, tScript);
+                _towersByPlayer[(int)entry.Value].Add(tScript);
+                Tower.OnOwnerChange += HandleTowerPlayerSwitch;
+
+
+
             }
-            
+
             foreach (KeyValuePair<Vector3, ePlayer> entry in mappedShocks) {
                 GameObject aTower = (GameObject)GameObject.Instantiate(shockPrefab, entry.Key, Quaternion.Euler(0, 0, 0));
                 Tower tScript = aTower.GetComponent<Tower>();
@@ -310,6 +330,12 @@ namespace Global {
                 }
                 towerLookup.Add(entry.Key, aTower.GetComponent<Tower>());
             }
+        }
+
+        private void HandleTowerPlayerSwitch(Tower t, ePlayer from, ePlayer to)
+        {
+            _towersByPlayer[(int)from].Remove(t);
+            _towersByPlayer[(int)to].Add(t);
         }
     }
 }

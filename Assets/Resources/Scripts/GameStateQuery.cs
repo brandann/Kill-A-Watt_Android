@@ -7,7 +7,7 @@ namespace Global
     public class GameStateQuery : MonoBehaviour
     {
 
-        private TowerState[] _towers;
+        private TowerState[] _towers;       
 
         #region PUBLIC METHODS
         

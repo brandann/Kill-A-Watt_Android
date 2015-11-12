@@ -1,8 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections;
 namespace Global{
-	public class Tower : MonoBehaviour
-    {
+
+    public delegate void ChangedOwner(Tower t, ePlayer switchedFromPlayer, ePlayer switchedToPlayer);
+
+    public class Tower : MonoBehaviour
+    {       
+        
+        public static event ChangedOwner OnOwnerChange;
+
+        
+
         #region Other GameObjects
         private GameManager Manager;
         private Camera sceneCam; //Needed to draw GUI labels centered in world cordinates
@@ -285,6 +293,10 @@ namespace Global{
         {
             lastUnitGeneratedTime = Time.realtimeSinceStartup;
 
+            //Notifiy listenter that tower has changed
+            if (null != OnOwnerChange)
+                OnOwnerChange(this, myOwner, switchTo);
+
             //Selection can't carry over when tower switches owner
             selected = false;
 
@@ -312,6 +324,8 @@ namespace Global{
 
             // this should prevent the sounds from playing at the begining.
             playsound = true;
+
+            
         }
 
         //--------------------------------------------------------------------------------------------------------------------------------------
