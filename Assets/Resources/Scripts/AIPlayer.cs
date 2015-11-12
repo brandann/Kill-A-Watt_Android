@@ -61,7 +61,7 @@ public class AIPlayer : MonoBehaviour {
                 else
                     return;
             case State.Acting:
-                if (null == _planningRoutine)
+                if (null == _actingRoutine)
                 {
                     _actingRoutine = StartCoroutine("TakeAction");
                     return;
@@ -89,6 +89,7 @@ public class AIPlayer : MonoBehaviour {
         {
             _weakestNeutral = null;
             _aiState = State.Acting;
+            _planningRoutine = null;
             StopCoroutine("DetermineGameState");
 
         }
@@ -97,6 +98,7 @@ public class AIPlayer : MonoBehaviour {
         {
             _weakestNeutral = neutralTowers[0];
             _aiState = State.Acting;
+            _planningRoutine = null;
             StopCoroutine("DetermineGameState");
         }
 
@@ -109,7 +111,8 @@ public class AIPlayer : MonoBehaviour {
                     _weakestNeutral = neutralTowers[i];
             }
 
-            _aiState = State.Acting;
+            _aiState = State.Planning;
+            _planningRoutine = null;
             StopCoroutine("DetermineGameState");
         }       
 
@@ -125,7 +128,7 @@ public class AIPlayer : MonoBehaviour {
         int selcted = 0;
 
         List<Tower> myTowers = gameManager.GetPlayer2Towers();
-        for (int i; i < myTowers.Count; ++i)
+        for (int i = 0; i < myTowers.Count; ++i)
         {
             if (numberAttackers == selcted)
                 break;
@@ -154,6 +157,13 @@ public class AIPlayer : MonoBehaviour {
     {
 
         yield return new WaitForSeconds(1);
+        if(null == _attackers)
+        {
+            _aiState = State.Idle;
+            _actingRoutine = null;
+            StopCoroutine("TakeAction");
+        }
+
         for (int i = 0; i < _attackers.Count; ++i)
         {
             if (false == _attackers[i].Selected)
@@ -164,6 +174,7 @@ public class AIPlayer : MonoBehaviour {
 
         gameManager.AttackToward(_weakestNeutral.transform.position, ePlayer.Player2);
         _aiState = State.Idle;
+        _actingRoutine = null;
 
 
     }
