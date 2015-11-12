@@ -55,6 +55,7 @@ namespace Global {
             //Find all the locations that towers should spawn at from markers
             BuildTowerLocations();
             SpawnTowers();
+            Tower.OnOwnerChange += HandleTowerPlayerSwitch;
         }
       
         public void resetScore(){
@@ -304,7 +305,7 @@ namespace Global {
                 }
                 towerLookup.Add(entry.Key, tScript);
                 _towersByPlayer[(int)entry.Value].Add(tScript);
-                Tower.OnOwnerChange += HandleTowerPlayerSwitch;
+                
 
 
 

@@ -27,6 +27,8 @@ namespace Global{
 
         // Update is called once per frame
         void Update () {
+
+            return;
             if (Input.GetMouseButtonDown(0)) {
                 mouseStart = Input.mousePosition;
             }
