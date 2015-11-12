@@ -63,6 +63,11 @@ namespace Global {
             player2Score = 0;
         }
 
+        public List<Tower> GetNeutralTowers()
+        {
+            return new List<Tower>(_towersByPlayer[(int)ePlayer.Neutral]);
+        }
+
         private void winCondition(){
             int player1Count = 0;
             int player2Count = 0;
