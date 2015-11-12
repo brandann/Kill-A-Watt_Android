@@ -13,6 +13,9 @@ public class AIPlayer : MonoBehaviour {
     private float _lastMoveTime;
     private Coroutine _sensingRoutine;
     private Coroutine _planningRoutine;
+    private Coroutine _actingRoutine;
+    private List<Tower> _attackers;
+    private List<Tower> _targets;
     private Tower _weakestNeutral;
     
 
@@ -52,15 +55,22 @@ public class AIPlayer : MonoBehaviour {
             case State.Planning:
                 if (null == _planningRoutine)
                 {
-                    _planningRoutine = StartCoroutine("TakeAction");
+                    _planningRoutine = StartCoroutine("CreatePlan");
                     return;
                 }
                 else
                     return;
-
-
-
-
+            case State.Acting:
+                if (null == _planningRoutine)
+                {
+                    _actingRoutine = StartCoroutine("TakeAction");
+                    return;
+                }
+                else
+                    return;
+            default:
+                Debug.LogError("Unhandled AI state");
+                break;
         }
 
 
@@ -68,7 +78,7 @@ public class AIPlayer : MonoBehaviour {
 
     IEnumerator DetermineGameState()
     {
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(0.5f);
         _weakestNeutral = null;
 
         
@@ -101,15 +111,60 @@ public class AIPlayer : MonoBehaviour {
 
             _aiState = State.Acting;
             StopCoroutine("DetermineGameState");
+        }       
+
+    }
+
+    IEnumerator CreatePlan()
+    {
+        _targets = new List<Tower>();
+        _attackers = new List<Tower>();
+
+        yield return new WaitForSeconds(0.5f);
+        int numberAttackers = 2;
+        int selcted = 0;
+
+        List<Tower> myTowers = gameManager.GetPlayer2Towers();
+        for (int i; i < myTowers.Count; ++i)
+        {
+            if (numberAttackers == selcted)
+                break;
+
+            if (myTowers[i].Units > 2)
+            {
+                _attackers.Add(myTowers[i]);
+                selcted++;
+            }
         }
 
-        
+        if (_weakestNeutral != null)
+            _targets.Add(_weakestNeutral);
 
+        if (_targets.Count == 0 || _attackers.Count == 0)
+        {
+            _aiState = State.Idle;
+        }
+        else
+        {
+            _aiState = State.Acting;
+        }
     }
 
     IEnumerator TakeAction()
     {
+
         yield return new WaitForSeconds(1);
+        for (int i = 0; i < _attackers.Count; ++i)
+        {
+            if (false == _attackers[i].Selected)
+            {
+                _attackers[i].ToggleSelect();
+            }
+        }
+
+        gameManager.AttackToward(_weakestNeutral.transform.position, ePlayer.Player2);
+        _aiState = State.Idle;
+
 
     }
 }
