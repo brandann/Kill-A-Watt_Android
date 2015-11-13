@@ -340,6 +340,7 @@ namespace Global {
                         break;
                 }
                 towerLookup.Add(entry.Key, aTower.GetComponent<Tower>());
+                _towersByPlayer[(int)entry.Value].Add(tScript);
             }
         }
 

@@ -104,12 +104,7 @@ public class AIPlayer : MonoBehaviour {
 
         if(neutralTowers.Count > 1)
         {
-            _weakestNeutral = neutralTowers[0];
-            for(int i = 1; i < neutralTowers.Count; ++i)
-            {
-                if (neutralTowers[i].Units < _weakestNeutral.Units)
-                    _weakestNeutral = neutralTowers[i];
-            }
+            _weakestNeutral = FindWeakest(neutralTowers);
 
             _aiState = State.Planning;
             _planningRoutine = null;
@@ -118,13 +113,28 @@ public class AIPlayer : MonoBehaviour {
 
     }
 
+    private Tower FindWeakest(List<Tower> towers)
+    {
+        if(null == towers || 0 == towers.Count)
+            return null;
+
+        Tower weakest = towers[0];
+        for (int i = 1; i < towers.Count; ++i)
+        {
+            if (towers[i].Units < weakest.Units)
+                weakest = towers[i];
+        }
+
+        return weakest;
+    }
+
     IEnumerator CreatePlan()
     {
         _targets = new List<Tower>();
         _attackers = new List<Tower>();
 
         yield return new WaitForSeconds(0.5f);
-        int numberAttackers = 2;
+        int numberAttackers = 3;
         int selcted = 0;
 
         List<Tower> myTowers = gameManager.GetPlayer2Towers();
