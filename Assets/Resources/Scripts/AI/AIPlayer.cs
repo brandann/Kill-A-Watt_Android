@@ -133,7 +133,7 @@ public class AIPlayer : MonoBehaviour {
         _targets = new List<Tower>();
         _attackers = new List<Tower>();
 
-        yield return new WaitForSeconds(0.5f);
+        
         int numberAttackers = 3;
         int selcted = 0;
 
@@ -161,6 +161,8 @@ public class AIPlayer : MonoBehaviour {
         {
             _aiState = State.Acting;
         }
+
+        yield break;
     }
 
     IEnumerator TakeAction()
