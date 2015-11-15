@@ -17,6 +17,7 @@ public class AIPlayer : MonoBehaviour {
     private List<Tower> _attackers;
     private List<Tower> _targets;
     private Tower _weakestNeutral;
+    private Tower _weakestPlayer1;
     
 
     //Seconds between AI Move
@@ -77,39 +78,22 @@ public class AIPlayer : MonoBehaviour {
     }
 
     IEnumerator DetermineGameState()
-    {
-        yield return new WaitForSeconds(0.5f);
+    {        
         _weakestNeutral = null;
+        _weakestPlayer1 = null;
 
         
         _sensingRoutine = null;
-        List<Tower> neutralTowers = gameManager.GetNeutralTowers();
+        List<Tower> neutralTowers = gameManager.GetTowersByPlayer(ePlayer.Neutral);
+        List<Tower> player1Towers = gameManager.GetTowersByPlayer(ePlayer.Player1);
 
-        if(0 == neutralTowers.Count)
-        {
-            _weakestNeutral = null;
-            _aiState = State.Acting;
-            _planningRoutine = null;
-            StopCoroutine("DetermineGameState");
+        _weakestNeutral = FindWeakest(neutralTowers);
+        _weakestPlayer1 = FindWeakest(player1Towers);
+        
+        _aiState = State.Planning;   
 
-        }
-
-        if(1 == neutralTowers.Count)
-        {
-            _weakestNeutral = neutralTowers[0];
-            _aiState = State.Acting;
-            _planningRoutine = null;
-            StopCoroutine("DetermineGameState");
-        }
-
-        if(neutralTowers.Count > 1)
-        {
-            _weakestNeutral = FindWeakest(neutralTowers);
-
-            _aiState = State.Planning;
-            _planningRoutine = null;
-            StopCoroutine("DetermineGameState");
-        }       
+        _planningRoutine = null;
+        yield break;    
 
     }
 
@@ -132,12 +116,31 @@ public class AIPlayer : MonoBehaviour {
     {
         _targets = new List<Tower>();
         _attackers = new List<Tower>();
-
         
         int numberAttackers = 3;
         int selcted = 0;
 
-        List<Tower> myTowers = gameManager.GetPlayer2Towers();
+        List<Tower> myTowers = gameManager.GetTowersByPlayer(ePlayer.Player2);                
+        
+
+        if (_weakestNeutral != null)
+        {
+            _targets.Add(_weakestNeutral);
+        }
+        else
+        {
+            if (_weakestPlayer1 != null)
+                _targets.Add(_weakestPlayer1);
+
+        }
+
+        if( 0 == _targets.Count)
+        {
+            _aiState = State.Idle;
+            yield break;
+
+        }
+
         for (int i = 0; i < myTowers.Count; ++i)
         {
             if (numberAttackers == selcted)
@@ -150,12 +153,11 @@ public class AIPlayer : MonoBehaviour {
             }
         }
 
-        if (_weakestNeutral != null)
-            _targets.Add(_weakestNeutral);
-
-        if (_targets.Count == 0 || _attackers.Count == 0)
+        if (0 == _attackers.Count)
         {
             _aiState = State.Idle;
+            yield break;
+
         }
         else
         {
@@ -168,7 +170,7 @@ public class AIPlayer : MonoBehaviour {
     IEnumerator TakeAction()
     {
 
-        yield return new WaitForSeconds(1);
+        
         if(null == _attackers)
         {
             _aiState = State.Idle;
@@ -184,9 +186,15 @@ public class AIPlayer : MonoBehaviour {
             }
         }
 
-        gameManager.AttackToward(_weakestNeutral.transform.position, ePlayer.Player2);
+        if(0 < _targets.Count )
+        {
+            gameManager.AttackToward(_targets[0].transform.position, ePlayer.Player2);
+
+        }
+        
         _aiState = State.Idle;
         _actingRoutine = null;
+        yield break;
 
 
     }

@@ -62,15 +62,11 @@ namespace Global {
             player1Score = 0;
             player2Score = 0;
         }
+             
 
-        public List<Tower> GetNeutralTowers()
+        public List<Tower> GetTowersByPlayer(ePlayer player)
         {
-            return new List<Tower>(_towersByPlayer[(int)ePlayer.Neutral]);
-        }
-
-        public List<Tower> GetPlayer2Towers()
-        {
-            return new List<Tower>(_towersByPlayer[(int)ePlayer.Player2]);
+            return new List<Tower>(_towersByPlayer[(int)player]);
         }
 
         private void winCondition(){
