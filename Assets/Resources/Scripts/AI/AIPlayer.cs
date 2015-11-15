@@ -18,7 +18,7 @@ public class AIPlayer : MonoBehaviour {
     private List<Tower> _targets;
     private Tower _weakestNeutral;
     private Tower _weakestPlayer1;
-    
+      
 
     //Seconds between AI Move
     public float SecondsBetweenMoves = 5;
@@ -26,9 +26,10 @@ public class AIPlayer : MonoBehaviour {
 	void Start () {
 
         _lastMoveTime = Time.time;
+        
 
-	
-	}
+
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -115,13 +116,9 @@ public class AIPlayer : MonoBehaviour {
     IEnumerator CreatePlan()
     {
         _targets = new List<Tower>();
-        _attackers = new List<Tower>();
-        
-        int numberAttackers = 3;
-        int selcted = 0;
+        _attackers = new List<Tower>();       
 
-        List<Tower> myTowers = gameManager.GetTowersByPlayer(ePlayer.Player2);                
-        
+        List<Tower> myTowers = gameManager.GetTowersByPlayer(ePlayer.Player2);                        
 
         if (_weakestNeutral != null)
         {
@@ -140,6 +137,11 @@ public class AIPlayer : MonoBehaviour {
             yield break;
 
         }
+
+        int numberAttackers = 3;
+        int selcted = 0;
+
+        numberAttackers = Random.Range(1, myTowers.Count);
 
         for (int i = 0; i < myTowers.Count; ++i)
         {
